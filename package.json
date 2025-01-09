@@ -42,7 +42,7 @@
     "lucide-react": "^0.460.0",
     "mongoose": "^8.8.2",
     "nanoid": "^5.0.8",
-    "next": "15.0.3",
+    "next": "^15.1.4",
     "next-auth": "^4.24.10",
     "nodemailer": "^6.9.16",
     "pdf-lib": "^1.17.1",
@@ -65,8 +65,7 @@
     "tailwindcss-animate": "^1.0.7",
     "validator": "^13.12.0",
     "xlsx": "^0.18.5",
-    "zod": "^3.23.8",
-    "@netlify/plugin-nextjs": "^4.41.3"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
