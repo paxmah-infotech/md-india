@@ -6,6 +6,12 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+[build.environment]
+  NEXT_PRIVATE_TARGET = "server"
+  NEXT_PUBLIC_API_BASE_URL = "$NEXT_PUBLIC_API_BASE_URL"
+  NEXT_PUBLIC_BASE_URL = "$NEXT_PUBLIC_BASE_URL"
+  NEXT_PUBLIC_ASSETS_URL = "$NEXT_PUBLIC_ASSETS_URL"
+
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/next"
