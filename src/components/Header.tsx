@@ -61,10 +61,10 @@ const Header: React.FC = () => {
             <Image
               src={siteConfig.logo}
               alt={siteConfig.name}
-              width={80}
-              height={80}
+              width={100}
+              height={100}
               quality={100}
-              className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full"
+              className="rounded-full"
               priority
             />
             <span className="font-bold text-gray-500 text-base sm:text-lg lg:text-xl">{siteConfig.name}</span>

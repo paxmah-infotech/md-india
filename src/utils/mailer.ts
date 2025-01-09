@@ -5,7 +5,9 @@ import mongoose from 'mongoose';
 
 const createTransport = () => {
   return nodemailer.createTransport({
-    service: process.env.SMTP_SERVICE,
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT || '465'),
+    secure: true, // true for port 465
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -59,14 +61,15 @@ export const sendLoginNotification = async ({
 
 export const sendEmail = async ({ email, emailType, userId }: any) => {
   try {
-    // Create a hashed token
+    // Create token
     const hashedToken = await bcryptjs.hash(userId.toString(), 10);
-    if (emailType === 'VERIFY') {
+
+    if (emailType === "VERIFY") {
       await User.findByIdAndUpdate(userId, {
         verificationToken: hashedToken,
         verificationTokenExpires: Date.now() + 3600000,
       });
-    } else if (emailType === 'RESET') {
+    } else if (emailType === "RESET") {
       await User.findByIdAndUpdate(userId, {
         resetPasswordToken: hashedToken,
         resetPasswordExpires: Date.now() + 3600000,
@@ -74,6 +77,22 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
     }
 
     const transport = createTransport();
+    
+    // console.log('Email Configuration:', {
+    //   host: process.env.SMTP_HOST,
+    //   port: process.env.SMTP_PORT,
+    //   user: process.env.SMTP_USER,
+    //   from: process.env.EMAIL_FROM
+    // });
+
+    // Verify SMTP connection
+    try {
+      await transport.verify();
+      // console.log('SMTP connection verified successfully');
+    } catch (verifyError) {
+      // console.error('SMTP verification failed:', verifyError);
+      throw verifyError;
+    }
 
     const emailTemplate = (type: 'VERIFY' | 'RESET', link: string) => `
       <!DOCTYPE html>
@@ -212,7 +231,7 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
     `;
 
     // Create verify and reset links
-    const domain = process.env.DOMAIN || 'http://localhost:3000';
+    const domain = process.env.NEXT_PUBLIC_BASE_URL || 'http://md-india.net';
     const link = emailType === 'VERIFY' 
       ? `${domain}/verifyemail?token=${hashedToken}`
       : `${domain}/auth/reset-password?token=${hashedToken}`;
@@ -225,7 +244,7 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
     };
 
     const mailresponse = await transport.sendMail(mailOptions);
-    console.log('Email sent successfully:', mailresponse.messageId);
+    // console.log('Email sent successfully:', mailresponse.messageId);
     return mailresponse;
   } catch (error: any) {
     console.error('Error sending email:', error);

@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { FiMail, FiArrowLeft } from 'react-icons/fi';
 import { toast } from 'sonner';
+import Header from '@/components/Header';
 
 // Form validation schema
 const schema = z.object({
@@ -66,6 +67,8 @@ export default function RequestResetPassword() {
   };
 
   return (
+    <>
+    <Header />
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Back to Login Link */}
@@ -161,5 +164,6 @@ export default function RequestResetPassword() {
         </div>
       </div>
     </div>
+    </>
   );
 }

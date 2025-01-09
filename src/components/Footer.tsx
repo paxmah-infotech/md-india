@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
       title: "Resources",
       links: [
         { label: "Documentation", href: "/docs" },
-        { label: "Blog", href: "/blog" },
+        // { label: "Blog", href: "/blog" },
         { label: "Support", href: "/support" },
       ],
     },
@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand Section */}
-          <div className="col-span-2 md:col-span-1">
+          {/* <div className="col-span-2 md:col-span-1">
             <Link href="/" className="inline-block">
               <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
               {siteConfig.name}
@@ -75,7 +75,7 @@ const Footer: React.FC = () => {
                 <FiLinkedin className="w-5 h-5" />
               </a>
             </div>
-          </div>
+          </div> */}
 
           {/* Links Sections */}
           {footerLinks.map((section) => (

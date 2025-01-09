@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FiLock, FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 import { toast } from 'sonner';
+import Header from '@/components/Header';
 
 // Password validation schema
 const schema = z.object({
@@ -98,6 +99,8 @@ export default function ResetPassword() {
   };
 
   return (
+    <>
+    <Header />
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Back to Login Link */}
@@ -228,5 +231,6 @@ export default function ResetPassword() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

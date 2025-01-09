@@ -92,13 +92,21 @@ export async function GET(request: NextRequest) {
 
       yOffset -= 25;
 
-      const totalQRs = exportData.qrCodes.length;
-      const totalScans = exportData.qrCodes.reduce((acc, qr) => acc + qr.scanCount, 0);
+      const qrCodes = exportData.qrCodes || [];
+      const totalQRs = qrCodes.length;
+      const totalScans = qrCodes.reduce((acc, qr) => acc + (qr.scanCount || 0), 0);
+      const avgScansPerQR = totalQRs > 0 ? Math.round(totalScans / totalQRs) : 0;
+      const mostUsedType = getMostCommonType(qrCodes) || 'N/A';
+      const mostScannedQR = qrCodes.length > 0 
+        ? qrCodes.reduce((prev, current) => 
+            ((prev.scanCount || 0) > (current.scanCount || 0)) ? prev : current
+          )
+        : null;
 
       const summaryItems = [
         `Total QR Codes: ${totalQRs}`,
         `Total Scans: ${totalScans}`,
-        `Most Used Type: ${getMostCommonType(exportData.qrCodes)}`
+        `Most Used Type: ${mostUsedType}`
       ];
 
       summaryItems.forEach(item => {
@@ -213,21 +221,24 @@ export async function GET(request: NextRequest) {
       XLSX.utils.book_append_sheet(workbook, qrSheet, 'QR Codes');
 
       // Analytics Sheet with enhanced metrics
-      const totalQRs = exportData.qrCodes.length;
-      const totalScans = exportData.qrCodes.reduce((acc, qr) => acc + qr.scanCount, 0);
+      const qrCodes = exportData.qrCodes || [];
+      const totalQRs = qrCodes.length;
+      const totalScans = qrCodes.reduce((acc, qr) => acc + (qr.scanCount || 0), 0);
       const avgScansPerQR = totalQRs > 0 ? Math.round(totalScans / totalQRs) : 0;
-      const mostUsedType = getMostCommonType(exportData.qrCodes);
-      const mostScannedQR = exportData.qrCodes.reduce((prev, current) => 
-        (prev.scanCount > current.scanCount) ? prev : current
-      );
+      const mostUsedType = getMostCommonType(qrCodes) || 'N/A';
+      const mostScannedQR = qrCodes.length > 0 
+        ? qrCodes.reduce((prev, current) => 
+            ((prev.scanCount || 0) > (current.scanCount || 0)) ? prev : current
+          )
+        : null;
 
       const analytics = [
         { 'Metric': 'Total QR Codes', 'Value': totalQRs },
         { 'Metric': 'Total Scans', 'Value': totalScans },
         { 'Metric': 'Average Scans per QR', 'Value': avgScansPerQR },
         { 'Metric': 'Most Used Type', 'Value': mostUsedType },
-        { 'Metric': 'Most Scanned QR', 'Value': mostScannedQR.title },
-        { 'Metric': 'Most Scanned QR (Scans)', 'Value': mostScannedQR.scanCount },
+        { 'Metric': 'Most Scanned QR', 'Value': mostScannedQR?.title },
+        { 'Metric': 'Most Scanned QR (Scans)', 'Value': mostScannedQR?.scanCount },
         { 'Metric': 'Export Date', 'Value': new Date().toLocaleDateString() },
         { 'Metric': 'User', 'Value': exportData.user.name }
       ];
@@ -305,8 +316,13 @@ export async function GET(request: NextRequest) {
 }
 
 function getMostCommonType(qrCodes: any[]): string {
-  const types = qrCodes.map(qr => qr.type);
-  return types.sort((a, b) =>
-    types.filter(v => v === a).length - types.filter(v => v === b).length
-  ).pop() || 'N/A';
+  if (!qrCodes || qrCodes.length === 0) return 'N/A';
+  
+  const typeCounts = qrCodes.reduce((acc: { [key: string]: number }, qr) => {
+    const type = qr.type || 'Unknown';
+    acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.entries(typeCounts).reduce((a, b) => a[1] > b[1] ? a : b)[0];
 }

@@ -7,6 +7,7 @@ import { Input, Button } from '@nextui-org/react'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
+import Header from '@/components/Header'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -124,6 +125,8 @@ export default function SignInPage() {
   }
 
   return (
+    <>
+    <Header />
     <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-gray-200 p-4 text-black'>
       <div className='w-full max-w-md p-8 my-14 bg-white rounded-lg shadow-md'>
         <h1 className='mb-6 text-3xl font-semibold text-center text-gray-800'>
@@ -210,5 +213,6 @@ export default function SignInPage() {
         </p>
       </div>
     </div>
+    </>
   )
 }
