@@ -44,7 +44,7 @@ const authOptions: NextAuthOptions = {
 
         try {
           await dbConnect();
-          const user = await User.findOne({ email: credentials.email });
+          const user = await User.findOne({ email: credentials.email }).select('+password');
 
           if (!user) {
             throw new Error('No user found with this email');
@@ -71,6 +71,7 @@ const authOptions: NextAuthOptions = {
             role: user.role || 'user'
           };
         } catch (error: any) {
+          console.error('Auth error:', error);
           throw new Error(error.message || 'Authentication failed');
         }
       },
@@ -78,26 +79,39 @@ const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        token.role = user.role;
+      try {
+        if (user) {
+          token.id = user.id;
+          token.email = user.email;
+          token.name = user.name;
+          token.role = user.role;
+        }
+        return token;
+      } catch (error) {
+        console.error('JWT callback error:', error);
+        return token;
       }
-      return token;
     },
-    async session({ session, token }: { session: any; token: any }) {
-      session.user.id = token.id;
-      session.user.email = token.email;
-      session.user.name = token.name as string;
-      session.user.role = token.role;
-      return session;
+    async session({ session, token }) {
+      try {
+        if (token) {
+          session.user.id = token.id;
+          session.user.email = token.email;
+          session.user.name = token.name as string;
+          session.user.role = token.role;
+        }
+        return session;
+      } catch (error) {
+        console.error('Session callback error:', error);
+        return session;
+      }
     }
   },
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
+  debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
@@ -106,4 +120,5 @@ const authOptions: NextAuthOptions = {
 };
 
 const handler = NextAuth(authOptions);
+
 export { handler as GET, handler as POST };

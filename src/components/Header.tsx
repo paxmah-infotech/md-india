@@ -55,16 +55,15 @@ const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white/75 backdrop-blur-lg">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
-        <div className="flex h-16 sm:h-18 lg:h-20 items-center justify-between">
+        <div className="flex h-auto sm:h-18 lg:h-20 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
             <Image
               src={siteConfig.logo}
               alt={siteConfig.name}
               width={100}
-              height={100}
+              height={80}
               quality={100}
-              className="rounded-full"
               priority
             />
             <span className="font-bold text-gray-500 text-base sm:text-lg lg:text-xl">{siteConfig.name}</span>
