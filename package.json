@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "clean": "rm -rf .next",
-    "prebuild": "npm run clean"
+    "lint": "next lint"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.2",
@@ -18,9 +16,9 @@
     "@hookform/resolvers": "^3.9.1",
     "@nextui-org/avatar": "^2.0.33",
     "@nextui-org/card": "^2.0.34",
-    "@nextui-org/input": "^2.2.5",
+    "@nextui-org/input": "^2.4.8",
     "@nextui-org/pagination": "^2.0.36",
-    "@nextui-org/react": "^2.4.8",
+    "@nextui-org/react": "^2.6.11",
     "@nextui-org/spacer": "^2.0.33",
     "@nextui-org/system": "^2.2.6",
     "@nextui-org/theme": "^2.2.11",
@@ -70,7 +68,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.9.3",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/crypto-js": "^4.2.2",

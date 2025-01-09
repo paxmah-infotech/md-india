@@ -6,9 +6,10 @@ import {
   IoGlobeOutline,
   IoOpenOutline
 } from 'react-icons/io5';
+import { FaWindows } from "react-icons/fa";
+import { FaEdge } from "react-icons/fa";
 import {
   SiApple,
-  SiWindows,
   SiAndroid,
   SiGooglechrome,
   SiFirefox,
@@ -18,8 +19,7 @@ import {
   SiIos,
   SiLinux,
   SiUbuntu,
-  SiMacos,
-  SiMicrosoftedge
+  SiMacos
 } from 'react-icons/si';
 import { HiDeviceMobile, HiDesktopComputer } from 'react-icons/hi';
 import { format } from 'date-fns';
@@ -103,7 +103,7 @@ const getOSIcon = (os: string) => {
   const iconClass = "w-3.5 h-3.5";
   if (os.toLowerCase().includes('ios')) return <SiIos className={iconClass} />;
   if (os.toLowerCase().includes('mac')) return <SiMacos className={iconClass} />;
-  if (os.toLowerCase().includes('windows')) return <SiWindows className={iconClass} />;
+  if (os.toLowerCase().includes('windows')) return <FaWindows className={iconClass} />;
   if (os.toLowerCase().includes('android')) return <SiAndroid className={iconClass} />;
   if (os.toLowerCase().includes('linux')) return <SiLinux className={iconClass} />;
   if (os.toLowerCase().includes('ubuntu')) return <SiUbuntu className={iconClass} />;
@@ -116,7 +116,7 @@ const getBrowserIcon = (browser: string) => {
   if (browser.toLowerCase().includes('firefox')) return <SiFirefox className={iconClass} />;
   if (browser.toLowerCase().includes('safari')) return <SiSafari className={iconClass} />;
   if (browser.toLowerCase().includes('opera')) return <SiOpera className={iconClass} />;
-  if (browser.toLowerCase().includes('edge')) return <SiMicrosoftedge className={iconClass} />;
+  if (browser.toLowerCase().includes('edge')) return <FaEdge className={iconClass} />;
   if (browser.toLowerCase().includes('brave')) return <SiBrave className={iconClass} />;
   return <IoGlobeOutline className={iconClass} />;
 };
