@@ -30,9 +30,8 @@ const Header: React.FC = () => {
   useOutsideClick(divRef, () => setMenuOpen(false))
 
   const handleLogout = () => {
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
     signOut({ 
-      callbackUrl: `${baseUrl}/auth/signin`
+      callbackUrl: '/auth/signin'
     });
   }
 

@@ -27,9 +27,8 @@ const Profile: React.FC = () => {
   const handleConfirmOpen = () => setConfirmOpen(true)
   const handleConfirmClose = () => setConfirmOpen(false)
   const handleLogout = () => {
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
     signOut({ 
-      callbackUrl: `${baseUrl}/auth/signin`
+      callbackUrl: '/auth/signin'
     });
   }
 
@@ -64,7 +63,7 @@ const Profile: React.FC = () => {
           toast.success('Account deleted successfully.')
           const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
           signOut({ 
-            callbackUrl: `${baseUrl}/auth/signin`
+            callbackUrl: '/auth/signin'
           });
         }
       }

@@ -105,9 +105,10 @@ const authOptions: NextAuthOptions = {
     }
   },
   pages: {
-    signIn: `${process.env.NEXTAUTH_URL}/auth/signin`,
-    error: `${process.env.NEXTAUTH_URL}/auth/error`,
+    signIn: '/auth/signin',
+    error: '/auth/error',
   },
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -115,7 +116,6 @@ const authOptions: NextAuthOptions = {
   jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  secret: process.env.NEXTAUTH_SECRET,
 };
 
 // This is the proper way to export auth routes for Next.js App Router
