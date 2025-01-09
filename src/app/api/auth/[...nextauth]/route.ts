@@ -5,9 +5,6 @@ import { NextAuthOptions } from 'next-auth';
 import User from '@/models/user.model';
 import dbConnect from '@/dbConfig/dbConfig';
 import { sendEmail } from '@/utils/mailer';
-import { NextResponse } from 'next/server';
-// import { sendLoginNotification } from '@/utils/mailer';
-// import { getClientIP, getIPInfo } from '@/utils/ip.utils';
 
 // Define custom user type
 interface CustomUser {
@@ -29,7 +26,7 @@ declare module "next-auth/jwt" {
   interface JWT extends CustomUser { }
 }
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -40,12 +37,12 @@ const authOptions: NextAuthOptions = {
         os: { label: 'OS', type: 'text', optional: true },
         location: { label: 'Location', type: 'text', optional: true },
       },
-      async authorize(credentials, request) {
-        try {
-          if (!credentials?.email || !credentials?.password) {
-            throw new Error('Please provide both email and password');
-          }
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Please provide both email and password');
+        }
 
+        try {
           await dbConnect();
 
           const user = await User.findOne({ email: credentials.email });
@@ -75,7 +72,7 @@ const authOptions: NextAuthOptions = {
           return {
             id: user._id.toString(),
             email: user.email,
-            name: user.name,
+            name: user.name || user.email.split('@')[0],
             role: user.role || 'user'
           };
         } catch (error: any) {
@@ -95,12 +92,10 @@ const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.name = token.name as string;
-        session.user.role = token.role as string;
-      }
+      session.user.id = token.id;
+      session.user.email = token.email;
+      session.user.name = token.name as string;
+      session.user.role = token.role;
       return session;
     }
   },
@@ -113,12 +108,8 @@ const authOptions: NextAuthOptions = {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
 };
 
 // This is the proper way to export auth routes for Next.js App Router
 const handler = NextAuth(authOptions);
-export const GET = handler;
-export const POST = handler;
+export { handler as GET, handler as POST }
