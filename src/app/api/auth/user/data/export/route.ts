@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-
 import { getUserQRCodes } from '@/services/qrService';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { authOptions } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
@@ -171,139 +170,45 @@ export async function GET(request: NextRequest) {
     }
     
     if (format === 'excel') {
-      const workbook = XLSX.utils.book_new();
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('QR Codes');
 
-      // Add metadata
-      workbook.Props = {
-        Title: "QR Code Export Report",
-        Subject: "QR Code Data Export",
-        Author: exportData.user.name,
-        CreatedDate: new Date()
+      // Add headers
+      worksheet.columns = [
+        { header: 'QR Code ID', key: 'id', width: 30 },
+        { header: 'Created Date', key: 'createdAt', width: 20 },
+        { header: 'Content', key: 'content', width: 50 },
+        { header: 'Type', key: 'type', width: 15 },
+        { header: 'Scan Count', key: 'scanCount', width: 15 },
+        { header: 'Last Scanned', key: 'lastScanned', width: 20 }
+      ];
+
+      // Style the header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE0E0E0' }
       };
 
-      // QR Codes Sheet with styling
-      const qrCodesData = exportData.qrCodes.map(qr => ({
-        'QR Title': qr.title,
-        'Type': qr.type.toUpperCase(),
-        'Target URL': qr.url,
-        'Created Date': new Date(qr.createdAt).toLocaleDateString(),
-        'Last Modified': new Date(qr.updatedAt).toLocaleDateString(),
-        'Total Scans': qr.scanCount,
-        'Status': 'Active'
-      }));
+      // Add data
+      qrCodes.forEach((qr: any) => {
+        worksheet.addRow({
+          id: qr._id,
+          createdAt: new Date(qr.createdAt).toLocaleDateString(),
+          content: qr.content,
+          type: qr.type,
+          scanCount: qr.scanCount || 0,
+          lastScanned: qr.lastScanned ? new Date(qr.lastScanned).toLocaleDateString() : 'Never'
+        });
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
       
-      const qrSheet = XLSX.utils.json_to_sheet(qrCodesData);
-
-      // Set column widths
-      const qrColWidths = [
-        { wch: 30 }, // QR Title
-        { wch: 15 }, // Type
-        { wch: 40 }, // Target URL
-        { wch: 15 }, // Created Date
-        { wch: 15 }, // Last Modified
-        { wch: 12 }, // Total Scans
-        { wch: 10 }  // Status
-      ];
-      qrSheet['!cols'] = qrColWidths;
-
-      // Add header style
-      const qrRange = XLSX.utils.decode_range(qrSheet['!ref'] || 'A1');
-      for (let C = qrRange.s.c; C <= qrRange.e.c; ++C) {
-        const address = XLSX.utils.encode_col(C) + "1";
-        if (!qrSheet[address]) continue;
-        qrSheet[address].s = {
-          font: { bold: true, color: { rgb: "FFFFFF" } },
-          fill: { fgColor: { rgb: "4F81BD" } },
-          alignment: { horizontal: "center" }
-        };
-      }
-
-      XLSX.utils.book_append_sheet(workbook, qrSheet, 'QR Codes');
-
-      // Analytics Sheet with enhanced metrics
-      const qrCodes = exportData.qrCodes || [];
-      const totalQRs = qrCodes.length;
-      const totalScans = qrCodes.reduce((acc, qr) => acc + (qr.scanCount || 0), 0);
-      const avgScansPerQR = totalQRs > 0 ? Math.round(totalScans / totalQRs) : 0;
-      const mostUsedType = getMostCommonType(qrCodes) || 'N/A';
-      const mostScannedQR = qrCodes.length > 0 
-        ? qrCodes.reduce((prev, current) => 
-            ((prev.scanCount || 0) > (current.scanCount || 0)) ? prev : current
-          )
-        : null;
-
-      const analytics = [
-        { 'Metric': 'Total QR Codes', 'Value': totalQRs },
-        { 'Metric': 'Total Scans', 'Value': totalScans },
-        { 'Metric': 'Average Scans per QR', 'Value': avgScansPerQR },
-        { 'Metric': 'Most Used Type', 'Value': mostUsedType },
-        { 'Metric': 'Most Scanned QR', 'Value': mostScannedQR?.title },
-        { 'Metric': 'Most Scanned QR (Scans)', 'Value': mostScannedQR?.scanCount },
-        { 'Metric': 'Export Date', 'Value': new Date().toLocaleDateString() },
-        { 'Metric': 'User', 'Value': exportData.user.name }
-      ];
-
-      const analyticsSheet = XLSX.utils.json_to_sheet(analytics);
-
-      // Set analytics column widths
-      analyticsSheet['!cols'] = [
-        { wch: 25 }, // Metric
-        { wch: 30 }  // Value
-      ];
-
-      // Style analytics headers
-      const analyticsRange = XLSX.utils.decode_range(analyticsSheet['!ref'] || 'A1');
-      for (let C = analyticsRange.s.c; C <= analyticsRange.e.c; ++C) {
-        const address = XLSX.utils.encode_col(C) + "1";
-        if (!analyticsSheet[address]) continue;
-        analyticsSheet[address].s = {
-          font: { bold: true, color: { rgb: "FFFFFF" } },
-          fill: { fgColor: { rgb: "4F81BD" } },
-          alignment: { horizontal: "center" }
-        };
-      }
-
-      XLSX.utils.book_append_sheet(workbook, analyticsSheet, 'Analytics');
-
-      // Usage Trends Sheet
-      const trends = exportData.qrCodes.map(qr => ({
-        'QR Code': qr.title,
-        'Type': qr.type.toUpperCase(),
-        'Days Active': Math.ceil((new Date().getTime() - new Date(qr.createdAt).getTime()) / (1000 * 3600 * 24)),
-        'Total Scans': qr.scanCount,
-        'Avg. Scans per Day': (qr.scanCount / Math.max(1, Math.ceil((new Date().getTime() - new Date(qr.createdAt).getTime()) / (1000 * 3600 * 24)))).toFixed(2)
-      })).sort((a, b) => b['Total Scans'] - a['Total Scans']);
-
-      const trendsSheet = XLSX.utils.json_to_sheet(trends);
-
-      // Set trends column widths
-      trendsSheet['!cols'] = [
-        { wch: 30 }, // QR Code
-        { wch: 15 }, // Type
-        { wch: 12 }, // Days Active
-        { wch: 12 }, // Total Scans
-        { wch: 15 }  // Avg. Scans per Day
-      ];
-
-      // Style trends headers
-      const trendsRange = XLSX.utils.decode_range(trendsSheet['!ref'] || 'A1');
-      for (let C = trendsRange.s.c; C <= trendsRange.e.c; ++C) {
-        const address = XLSX.utils.encode_col(C) + "1";
-        if (!trendsSheet[address]) continue;
-        trendsSheet[address].s = {
-          font: { bold: true, color: { rgb: "FFFFFF" } },
-          fill: { fgColor: { rgb: "4F81BD" } },
-          alignment: { horizontal: "center" }
-        };
-      }
-
-      XLSX.utils.book_append_sheet(workbook, trendsSheet, 'Usage Trends');
-
-      const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-      return new NextResponse(excelBuffer, {
+      return new NextResponse(buffer, {
         headers: {
           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          'Content-Disposition': 'attachment; filename=QRData.xlsx'
+          'Content-Disposition': 'attachment; filename="qr-codes-export.xlsx"'
         }
       });
     }

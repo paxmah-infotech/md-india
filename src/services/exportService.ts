@@ -1,4 +1,5 @@
 import { toast } from 'react-hot-toast';
+import ExcelJS from 'exceljs';
 
 export type ExportFormat = 'excel' | 'pdf' | 'json';
 
@@ -165,70 +166,42 @@ const generatePDF = async (data: any) => {
 };
 
 const generateExcel = async (data: any) => {
-  const XLSX = await import('xlsx');
-  const workbook = XLSX.utils.book_new();
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('QR Codes');
 
-  // QR Codes Sheet
-  const qrCodesData = data.qrCodes.map((qr: any) => ({
-    'Title': qr.title || 'Untitled',
-    'Type': qr.type,
-    'URL': qr.url,
-    'Created Date': new Date(qr.createdAt).toLocaleDateString(),
-    'Total Scans': qr.scanCount || 0,
-    'Last Scan': qr.lastScan ? new Date(qr.lastScan).toLocaleDateString() : 'Never',
-    'Status': qr.active ? 'Active' : 'Inactive'
-  }));
-  
-  const qrSheet = XLSX.utils.json_to_sheet(qrCodesData);
-  XLSX.utils.book_append_sheet(workbook, qrSheet, 'QR Codes');
+  // Add headers
+  worksheet.columns = [
+    { header: 'QR Code ID', key: 'id', width: 30 },
+    { header: 'Created Date', key: 'createdAt', width: 20 },
+    { header: 'Content', key: 'content', width: 50 },
+    { header: 'Type', key: 'type', width: 15 },
+    { header: 'Scan Count', key: 'scanCount', width: 15 },
+    { header: 'Last Scanned', key: 'lastScanned', width: 20 }
+  ];
 
-  // Scan Logs Sheet
-  const scanLogs: any[] = [];
+  // Style the header row
+  worksheet.getRow(1).font = { bold: true };
+  worksheet.getRow(1).fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFE0E0E0' }
+  };
+
+  // Add data
   data.qrCodes.forEach((qr: any) => {
-    if (qr.recentScans) {
-      qr.recentScans.forEach((scan: any) => {
-        scanLogs.push({
-          'QR Code': qr.title || 'Untitled',
-          'Scan Date': new Date(scan.timestamp).toLocaleString(),
-          'Location': scan.location || 'Unknown',
-          'Device': scan.device || 'Unknown',
-          'Browser': scan.browser || 'Unknown',
-          'OS': scan.os || 'Unknown'
-        });
-      });
-    }
+    worksheet.addRow({
+      id: qr._id,
+      createdAt: new Date(qr.createdAt).toLocaleDateString(),
+      content: qr.content,
+      type: qr.type,
+      scanCount: qr.scanCount || 0,
+      lastScanned: qr.lastScanned ? new Date(qr.lastScanned).toLocaleDateString() : 'Never'
+    });
   });
 
-  if (scanLogs.length > 0) {
-    const scanSheet = XLSX.utils.json_to_sheet(scanLogs);
-    XLSX.utils.book_append_sheet(workbook, scanSheet, 'Scan Logs');
-  }
-
-  // Analytics Sheet
-  const analytics = {
-    'Total QR Codes': data.qrCodes.length,
-    'Total Scans': data.qrCodes.reduce((acc: number, qr: any) => acc + (qr.scanCount || 0), 0),
-    'Active QR Codes': data.qrCodes.filter((qr: any) => qr.active).length,
-    'Most Scanned QR': data.qrCodes.reduce((acc: any, qr: any) => 
-      (!acc || (qr.scanCount || 0) > acc.scanCount) ? qr : acc, null)?.title || 'None'
-  };
-
-  const analyticsSheet = XLSX.utils.json_to_sheet([analytics]);
-  XLSX.utils.book_append_sheet(workbook, analyticsSheet, 'Analytics');
-
-  // Set column widths
-  const setCellWidths = (sheet: any) => {
-    const columnWidths = Object.keys(sheet['!ref'] ? sheet[sheet['!ref'].split(':')[0]] : {}).map(key => ({
-      wch: Math.max(20, key.length)
-    }));
-    sheet['!cols'] = columnWidths;
-  };
-
-  [qrSheet, scanLogs.length > 0 ? workbook.Sheets['Scan Logs'] : null, analyticsSheet]
-    .filter(Boolean)
-    .forEach(setCellWidths);
-
-  return XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+  // Generate buffer
+  const buffer = await workbook.xlsx.writeBuffer();
+  return buffer;
 };
 
 export async function exportUserData({ format, fileName }: ExportOptions): Promise<boolean> {
