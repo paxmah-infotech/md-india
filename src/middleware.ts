@@ -5,6 +5,18 @@ import { rateLimiter } from './utils/rateLimiter';
 
 export async function middleware(request: NextRequest) {
   try {
+    const pathName = request.nextUrl.pathname;
+
+    // Skip middleware for static files and API routes
+    if (
+      pathName.startsWith('/_next') || // Skip Next.js static files
+      pathName.startsWith('/assets') || // Skip assets
+      pathName.startsWith('/api/auth') || // Skip auth API routes
+      pathName.includes('.') // Skip files with extensions (images, etc.)
+    ) {
+      return NextResponse.next();
+    }
+
     const token = await getToken({ 
       req: request,
       secret: process.env.NEXTAUTH_SECRET 
@@ -17,8 +29,6 @@ export async function middleware(request: NextRequest) {
       console.error(`Rate limit exceeded for IP: ${clientIp}`);
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
-
-    const pathName = request.nextUrl.pathname;
 
     // Define routes
     const publicRoutes = [
@@ -36,11 +46,6 @@ export async function middleware(request: NextRequest) {
       '/auth/reset-password',
       '/auth/verifyemail',
     ];
-
-    // Handle API routes differently
-    if (pathName.startsWith('/api/auth')) {
-      return NextResponse.next();
-    }
 
     // If user is not authenticated
     if (!token) {
@@ -66,11 +71,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/auth/:path*',
-    '/dashboard/:path*',
-    '/profile/:path*',
-    '/api/auth/:path*',
-    '/api/user/:path*',
+    '/((?!_next/static|_next/image|favicon.ico|assets/).*)',
   ]
 };
