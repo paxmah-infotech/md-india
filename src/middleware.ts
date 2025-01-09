@@ -1,27 +1,24 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
+import { rateLimiter } from './utils/rateLimiter';
 
 export async function middleware(request: NextRequest) {
-  const pathName = request.nextUrl.pathname;
+  const token = await getToken({ req: request });
+  const clientIp =
+    request.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown';
 
-  // Skip middleware for static files and API routes
-  if (
-    pathName.startsWith('/_next') ||
-    pathName.startsWith('/assets') ||
-    pathName.startsWith('/api/') ||
-    pathName.includes('.') ||
-    pathName === '/'
-  ) {
-    return NextResponse.next();
+  // Apply rate-limiting
+  if (!rateLimiter(clientIp)) {
+    console.error(`Rate limit exceeded for IP: ${clientIp}`);
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const token = await getToken({ 
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET 
-  });
+  const pathName = request.nextUrl.pathname;
 
-  // Public routes that don't require authentication
+  /**
+   * Define public, protected, and restricted routes.
+   */
   const publicRoutes = [
     '/auth/signin',
     '/auth/register',
@@ -30,27 +27,40 @@ export async function middleware(request: NextRequest) {
     '/auth/verifyemail',
   ];
 
-  // If the route is public, allow access
-  if (publicRoutes.includes(pathName)) {
-    return NextResponse.next();
-  }
+  const restrictedIfAuthenticatedRoutes = [
+    '/auth/signin',
+    '/auth/register',
+    '/auth/request-reset-password',
+    '/auth/reset-password',
+    '/auth/verifyemail',
+  ];
 
-  // If no token and trying to access protected route, redirect to login
+  // If user is not authenticated:
   if (!token) {
-    const signInUrl = new URL('/auth/signin', request.url);
-    signInUrl.searchParams.set('callbackUrl', request.url);
-    return NextResponse.redirect(signInUrl);
+    if (!publicRoutes.includes(pathName)) {
+      console.log('Unauthenticated user trying to access protected route.');
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
+    return NextResponse.next(); // Allow public routes for unauthenticated users
   }
 
+  // If user is authenticated:
+  if (restrictedIfAuthenticatedRoutes.includes(pathName)) {
+    console.log('Authenticated user trying to access a restricted route.');
+    return NextResponse.redirect(new URL('/', request.url)); // Redirect to a dashboard or other protected page
+  }
+
+  // Allow access to all other routes for authenticated users
   return NextResponse.next();
 }
 
-// Update matcher to only check specific routes
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/profile/:path*',
-    '/auth/:path*',
-    '/admin/:path*',
-  ]
+    '/admin/:path*', // Match all admin routes
+    '/auth/:path*',  // Match all auth routes
+    '/dashboard',    // Match dashboard
+    '/profile',      // Match profile
+    '/new',       // Match the root route
+    '/export'
+  ],
 };
