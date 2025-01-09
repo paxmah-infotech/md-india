@@ -8,6 +8,7 @@ import { createQr } from '@/utils/apiHandlers'
 import { useRouter } from 'next/navigation'
 import UrlInput from './common/Input'
 import html2canvas from 'html2canvas'
+import { siteConfig } from '@/config/site.config'
 
 // QR code styles
 const qrCodeStyles = [
@@ -228,6 +229,7 @@ export default function StylishQRCode () {
       width,
       height: width,
       data: url || 'https://example.com',
+      image: siteConfig.qrlogo,
       dotsOptions: {
         color: defaultQrColor,
         type: dotType

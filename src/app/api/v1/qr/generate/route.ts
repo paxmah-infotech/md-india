@@ -4,6 +4,7 @@ import QRCode from '@/models/qrcode.model'; // Import the QRCode model you provi
 import { nanoid } from 'nanoid'; // Import nanoid for generating unique short IDs
 import dbConnect from "@/dbConfig/dbConfig";
 import UserHistory from "@/models/userhistory.model";
+import User from "@/models/user.model";
 
 export async function POST(request: NextRequest) {
   await dbConnect()
@@ -19,7 +20,14 @@ export async function POST(request: NextRequest) {
     const { id: userId } = token; // Get the user ID from the token
     // console.log("user id : ", userId)
 
-    // Parse the request body to get QR code details
+    // const user = User.findById(userId);
+    // if(user){
+    //   console.log("user : ", user)
+    //   if(!user?.isVerified){
+    //     return NextResponse.json({ message: "User is not verified" }, { status: 401 });
+    //   }
+    // }
+    // // Parse the request body to get QR code details
     const formData = await request.formData();
     const title = formData.get("title")
     const showTitle = formData.get("showTitle")
@@ -42,7 +50,7 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    console.log("title ", title , "showTitle ", showTitle , "textContent ", textContent , "showText ", showText , "targetUrl ", targetUrl)
+    // console.log("title ", title , "showTitle ", showTitle , "textContent ", textContent , "showText ", showText , "targetUrl ", targetUrl)
     // console.log("qrOptions:", qrOptions);
 
     // Generate a short unique ID for the QR code

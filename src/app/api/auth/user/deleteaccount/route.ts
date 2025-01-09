@@ -6,6 +6,7 @@ import QRCode from '@/models/qrcode.model';
 
 export async function DELETE(request: NextRequest) {
     try {
+
         // Get the user's token (this is for authentication)
         const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
         if (!token) {

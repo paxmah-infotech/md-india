@@ -26,7 +26,12 @@ const Profile: React.FC = () => {
   const [isConfirmOpen, setConfirmOpen] = useState(false)
   const handleConfirmOpen = () => setConfirmOpen(true)
   const handleConfirmClose = () => setConfirmOpen(false)
-  const handleLogout = () => signOut({ callbackUrl: `${process.env.NEXTAUTH_URL}/auth/signin` })
+  const handleLogout = () => {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    signOut({ 
+      callbackUrl: `${baseUrl}/auth/signin`
+    });
+  }
 
   useEffect(() => {
     setUserName(session?.user?.name || '')
@@ -54,9 +59,13 @@ const Profile: React.FC = () => {
     try {
       if (inputValue?.toLowerCase() === 'delete') {
         const response = await deleteAccount()
-        if (response?.message === 'Account deleted successfully') {
+        console.log("response : ", response?.success)
+        if (response?.message) {
           toast.success('Account deleted successfully.')
-          signOut() // Sign the user out after deletion
+          const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+          signOut({ 
+            callbackUrl: `${baseUrl}/auth/signin`
+          });
         }
       }
     } catch (err) {

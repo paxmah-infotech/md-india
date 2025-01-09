@@ -13,7 +13,7 @@ function sanitizeUser(user: any) {
 // Define the user schema with only email, password, and name
 const userSchema = Joi.object({
   email: Joi.string()
-    .email({ tlds: { allow: false } })
+  .email({ tlds: { allow: true } })
     .required()
     .trim()
     .messages({
@@ -21,16 +21,18 @@ const userSchema = Joi.object({
       "string.empty": "Email is required.",
     }),
 
-  password: Joi.string()
+    password: Joi.string()
     .min(8)
     .max(128)
-    .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])"))
+    .pattern(new RegExp("^(?=.*[A-Za-z])(?=.*\\d)"))
     .required()
     .messages({
-      "string.pattern.base": "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      "string.pattern.base": "Password must include at least one letter and one number.",
       "string.min": "Password must be at least 8 characters long.",
+      "string.empty": "Password is required.",
     }),
-});
+
+  });
 
 export async function POST(request: NextRequest) {
   await dbConnect();

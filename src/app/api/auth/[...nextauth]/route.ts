@@ -4,6 +4,8 @@ import bcryptjs from 'bcryptjs';
 import { NextAuthOptions } from 'next-auth';
 import User from '@/models/user.model';
 import dbConnect from '@/dbConfig/dbConfig';
+import { sendEmail } from '@/utils/mailer';
+import { NextResponse } from 'next/server';
 // import { sendLoginNotification } from '@/utils/mailer';
 // import { getClientIP, getIPInfo } from '@/utils/ip.utils';
 
@@ -16,15 +18,15 @@ interface CustomUser {
 }
 
 declare module "next-auth" {
-  interface User extends CustomUser {}
-  
+  interface User extends CustomUser { }
+
   interface Session extends DefaultSession {
     user: CustomUser;
   }
 }
 
 declare module "next-auth/jwt" {
-  interface JWT extends CustomUser {}
+  interface JWT extends CustomUser { }
 }
 
 const authOptions: NextAuthOptions = {
@@ -58,45 +60,18 @@ const authOptions: NextAuthOptions = {
             throw new Error('Invalid password');
           }
 
-          // let locationInfo:any = { 
-          //   city: 'Unknown', 
-          //   region: 'Unknown', 
-          //   country: 'Unknown' 
-          // }
-          // try {
-          //   // Get public IP
-          //   const clientIP = getClientIP(request as any)
-          //   // Get IP info
-          //   const ipInfoResponse:any = await getIPInfo(clientIP)
-          //   if (ipInfoResponse?.success && ipInfoResponse?.data) {
-          //     locationInfo = {
-          //       city: ipInfoResponse?.data?.cityName || 'Unknown',
-          //       region: ipInfoResponse?.data?.regionName || 'Unknown',
-          //       country: ipInfoResponse?.data?.countryName || 'Unknown'
-          //     }
-          //   }
-          // } catch (ipError) {
-          //   console.error('Failed to get IP info:', ipError)
-          // }
+          if (!user.isVerified) {
+            // Send verification email
+            await sendEmail({
+              email: user.email,
+              emailType: "VERIFY",
+              userId: user._id,
+            });
+            
+            throw new Error('Please verify your email. Verification email sent.');
+          }
 
-          // Construct location string
-          // const locationString = `${locationInfo.city}, ${locationInfo.region}, ${locationInfo.country}`
-
-          // Send login notification
-
-          // Send login notification
-          // try {
-          //   await sendLoginNotification({
-          //     email: user.email,
-          //     name: user.name,
-          //     browser: credentials.browser,
-          //     os: credentials.os,
-          //     location: locationString
-          //   });
-          // } catch (error) {
-          //   console.error('Failed to send login notification:', error);
-          // }
-
+          // Return user data for successful login
           return {
             id: user._id.toString(),
             email: user.email,
@@ -110,28 +85,24 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;
       }
-      if (account) {
-        token.accessToken = account.access_token;
-      }
       return token;
     },
-    async session({ session, token }): Promise<Session> {
-      if (session?.user) {
-        (session.user as any).accessToken = token.accessToken;
-        session.user.id = token.id;
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
         session.user.role = token.role as string;
       }
       return session;
-    },
+    }
   },
   pages: {
     signIn: `${process.env.NEXTAUTH_URL}/auth/signin`,

@@ -29,7 +29,7 @@ export default function RegisterForm() {
     const data = await response.json();
 
     if (data.success) {
-      setSuccess('Registration successful! You can now sign in.');
+      setSuccess('Registration successful! Verify your account and sign in now.');
       setEmail('');
       setPassword('');
       setTimeout(() => {

@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import bcryptjs from 'bcryptjs';
 import User from '@/models/user.model';
+import mongoose from 'mongoose';
 
 const createTransport = () => {
   return nodemailer.createTransport({
@@ -60,28 +61,27 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
   try {
     // Create a hashed token
     const hashedToken = await bcryptjs.hash(userId.toString(), 10);
-
     if (emailType === 'VERIFY') {
       await User.findByIdAndUpdate(userId, {
-        verifyToken: hashedToken,
-        verifyTokenExpiry: Date.now() + 3600000,
+        verificationToken: hashedToken,
+        verificationTokenExpires: Date.now() + 3600000,
       });
     } else if (emailType === 'RESET') {
       await User.findByIdAndUpdate(userId, {
         resetPasswordToken: hashedToken,
-        resetPasswordExpiry: Date.now() + 3600000,
+        resetPasswordExpires: Date.now() + 3600000,
       });
     }
 
     const transport = createTransport();
 
-    const resetPasswordTemplate = (resetLink: string) => `
+    const emailTemplate = (type: 'VERIFY' | 'RESET', link: string) => `
       <!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Reset Your Password</title>
+        <title>${type === 'VERIFY' ? 'Verify Your Email' : 'Reset Your Password'}</title>
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
           
@@ -183,16 +183,22 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
           </div>
           
           <div class="content">
-            <h1>Reset Your Password</h1>
+            <h1>${type === 'VERIFY' ? 'Verify Your Email' : 'Reset Your Password'}</h1>
             <p>Hello,</p>
-            <p>We received a request to reset your password. Click the button below to create a new password. This link is valid for 1 hour.</p>
+            ${type === 'VERIFY' 
+              ? `<p>Thank you for registering with QR Service. Please click the button below to verify your email address. This link is valid for 1 hour.</p>`
+              : `<p>We received a request to reset your password. Click the button below to create a new password. This link is valid for 1 hour.</p>`
+            }
             
-            <a href="${resetLink}" class="button">Reset Password</a>
+            <a href="${link}" class="button">${type === 'VERIFY' ? 'Verify Email' : 'Reset Password'}</a>
             
-            <p>If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
+            ${type === 'VERIFY'
+              ? `<p>If you didn't create an account with QR Service, you can safely ignore this email.</p>`
+              : `<p>If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>`
+            }
             
             <div class="notice">
-              <p>For security reasons, this link will expire in 1 hour. If you need to reset your password after that, please request a new reset link.</p>
+              <p>For security reasons, this link will expire in 1 hour.</p>
             </div>
           </div>
           
@@ -207,13 +213,15 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
 
     // Create verify and reset links
     const domain = process.env.DOMAIN || 'http://localhost:3000';
-    const resetLink = `${domain}/auth/reset-password?token=${hashedToken}`;
+    const link = emailType === 'VERIFY' 
+      ? `${domain}/verifyemail?token=${hashedToken}`
+      : `${domain}/auth/reset-password?token=${hashedToken}`;
 
     const mailOptions = {
       from: `QR Service <${process.env.SMTP_USER}>`,
       to: email,
       subject: emailType === 'VERIFY' ? 'Verify your email' : 'Reset your password',
-      html: resetPasswordTemplate(resetLink),
+      html: emailTemplate(emailType, link),
     };
 
     const mailresponse = await transport.sendMail(mailOptions);

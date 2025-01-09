@@ -7,6 +7,7 @@ import { qrCodeStyles } from './styles'
 import QRCodeStyling from 'qr-code-styling'
 import { DotType, CornerSquareType, CornerDotType } from 'qr-code-styling'
 import { QRCodeStateUpdate } from './types'
+import { siteConfig } from '@/config/site.config'
 
 export default function StylishQRCode() {
   const {
@@ -29,6 +30,7 @@ export default function StylishQRCode() {
         ...style,
         width: 85,
         height: 85,
+        image: siteConfig.qrlogo,
         data: `${origin}/api/v1/qr?shortId=find&targetUrl=${state.url}`,
         backgroundOptions: {
           color: state.bgColor

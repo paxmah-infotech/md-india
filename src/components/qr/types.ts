@@ -18,6 +18,7 @@ export interface QRCodeOptions {
   width: number
   height: number
   data: string
+  image?: string
   dotsOptions: {
     color: string
     type: DotType
@@ -50,6 +51,7 @@ export interface QRCodeState {
   selectedStyleIndex: number | null
   bgColor: string
   qrColor: string
+  image?: string
   title: string
   showTitle: boolean
   showText: boolean

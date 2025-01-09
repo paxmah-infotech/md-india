@@ -7,6 +7,7 @@ import { FaDownload } from "react-icons/fa";
 import Image from "next/image";
 import { createQr } from "@/utils/apiHandlers";
 import { useRouter } from "next/navigation";
+import { siteConfig } from "@/config/site.config";
 
 const qrCodeStyles = [
     { name: "Red Square", dotsOptions: { type: "square" as DotType }, cornersSquareOptions: { type: "square" as CornerSquareType }, backgrouondColor: "#ffffff", color: "#000000" },
@@ -122,6 +123,7 @@ export default function StylishQRCode() {
                 width: 85,
                 height: 85,
                 data: url,
+                image: siteConfig.qrlogo,
                 backgroundOptions: {
                     color: bgColor,
                 },

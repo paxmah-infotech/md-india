@@ -4,6 +4,7 @@ import { QRCodeState, QRCodeOptions, ErrorCorrectionLevel } from '../types'
 import { qrCodeStyles } from '../styles'
 import { createQr } from '@/utils/apiHandlers'
 import { useRouter } from 'next/navigation'
+import { siteConfig } from '@/config/site.config'
 
 export const useQRCode = () => {
   const [state, setState] = useState<QRCodeState>({
@@ -13,12 +14,13 @@ export const useQRCode = () => {
     bgColor: '#ffffff',
     qrColor: '',
     title: 'Scan Me',
+    image: siteConfig.qrlogo,
     showTitle: true,
     showText: true,
     textContent: '',
     qrCreated: false,
-    cornerType: 'square',
-    dotType: 'square',
+    cornerType: 'extra-rounded',
+    dotType: 'dots',
     cornerDotType: 'square',
     margin: 20,
     width: 300,
@@ -52,6 +54,7 @@ export const useQRCode = () => {
       width: state.width,
       height: state.width,
       data: state.url || 'https://example.com',
+      image: siteConfig.qrlogo,
       dotsOptions: {
         color: defaultQrColor,
         type: state.dotType
@@ -118,6 +121,7 @@ export const useQRCode = () => {
         width: state.width,
         height: state.width,
         data: state.url || 'https://example.com',
+        image: siteConfig.qrlogo,
         dotsOptions: {
           color: state.qrColor || qrCodeStyles[state.selectedStyleIndex]?.color || '#000000',
           type: state.dotType

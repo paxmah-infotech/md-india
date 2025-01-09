@@ -15,6 +15,7 @@ interface QRControlsProps {
   showUrl: boolean
   showTitle: boolean
   showText: boolean
+  image?: string
   cornerType: CornerSquareType
   dotType: DotType
   cornerDotType: CornerDotType
@@ -44,6 +45,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
   showTitle,
   showText,
   cornerType,
+  image,
   dotType,
   cornerDotType,
   width,

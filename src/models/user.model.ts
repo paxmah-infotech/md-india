@@ -41,7 +41,6 @@ const UserSchema: Schema = new Schema({
     unique: true,
     trim: true,
     lowercase: true,
-    validate: [validator.isEmail, "Invalid email address"],
   },
   password: {
     type: String,

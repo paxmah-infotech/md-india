@@ -54,30 +54,30 @@ const Header: React.FC = () => {
   )
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/75 backdrop-blur-lg">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex h-28 items-center justify-between">
+    <header className="sticky top-0 z-40 w-full border-b bg-white/75 backdrop-blur-lg">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="flex h-16 sm:h-18 lg:h-20 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
+          <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
             <Image
               src={siteConfig.logo}
               alt={siteConfig.name}
-               width={120}
-              height={150}
+              width={80}
+              height={80}
               quality={100}
-              className="rounded-full"
+              className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full"
               priority
             />
-            <span className="font-bold text-gray-500 text-2xl">{siteConfig.name}</span>
+            <span className="font-bold text-gray-500 text-base sm:text-lg lg:text-xl">{siteConfig.name}</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden sm:flex sm:items-center sm:space-x-4">
+          <nav className="hidden sm:flex sm:items-center sm:space-x-1 md:space-x-2 lg:space-x-3">
             {visibleNavItems.map(({ path, icon: Icon, label }) => (
               <Link
                 key={path}
                 href={path}
-                className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`flex items-center px-2 md:px-3 py-1.5 md:py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive(path)
                     ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -90,7 +90,7 @@ const Header: React.FC = () => {
             {status === 'authenticated' ? (
               <button
                 onClick={handleConfirmOpen}
-                className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"
+                className="flex items-center px-2 md:px-3 py-1.5 md:py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"
               >
                 <LuLogOut className="mr-1.5 h-4 w-4" />
                 Logout
@@ -98,71 +98,69 @@ const Header: React.FC = () => {
             ) : (
               <Link
                 href="/auth/signin"
-                className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"
+                className="flex items-center px-2 md:px-3 py-1.5 md:py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"
               >
                 <FiLogIn className="mr-1.5 h-4 w-4" />
                 Login
               </Link>
             )}
-          </div>
+          </nav>
 
           {/* Mobile menu button */}
-          <div className="flex items-center sm:hidden">
-            <button
-              onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100"
-            >
-              <HiMenu className="h-6 w-6" />
-            </button>
-          </div>
+          <button
+            onClick={toggleMenu}
+            className="inline-flex items-center justify-center p-1.5 sm:p-2 rounded-md text-gray-700 hover:bg-gray-100 sm:hidden"
+          >
+            <HiMenu className="h-5 w-5" />
+          </button>
         </div>
       </div>
 
       {/* Mobile Navigation */}
       {menuOpen && (
-        <motion.div
+        <motion.nav
           ref={divRef}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           className="sm:hidden bg-white border-t"
         >
-          <div className="pt-2 pb-3 space-y-1">
+          <div className="py-2 space-y-1">
             {visibleNavItems.map(({ path, icon: Icon, label }) => (
               <Link
                 key={path}
                 href={path}
-                className={`flex items-center px-4 py-2 text-base font-medium ${
+                className={`flex items-center px-4 py-2 text-sm font-medium ${
                   isActive(path)
                     ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
                 onClick={() => setMenuOpen(false)}
               >
-                <Icon className="mr-3 h-5 w-5" />
+                <Icon className="mr-3 h-4 w-4" />
                 {label}
               </Link>
             ))}
             {status === 'authenticated' ? (
               <button
                 onClick={handleConfirmOpen}
-                className="w-full flex items-center px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+                className="w-full flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
               >
-                <LuLogOut className="mr-3 h-5 w-5" />
+                <LuLogOut className="mr-3 h-4 w-4" />
                 Logout
               </button>
             ) : (
               <Link
                 href="/auth/signin"
-                className="flex items-center px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+                className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
                 onClick={() => setMenuOpen(false)}
               >
-                <FiLogIn className="mr-3 h-5 w-5" />
+                <FiLogIn className="mr-3 h-4 w-4" />
                 Login
               </Link>
             )}
           </div>
-        </motion.div>
+        </motion.nav>
       )}
 
       {/* Logout Confirmation Dialog */}
