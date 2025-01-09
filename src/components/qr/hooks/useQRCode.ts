@@ -19,8 +19,8 @@ export const useQRCode = () => {
     showText: true,
     textContent: '',
     qrCreated: false,
-    cornerType: 'extra-rounded',
-    dotType: 'dots',
+    cornerType: 'square',
+    dotType: 'square',
     cornerDotType: 'square',
     margin: 20,
     width: 300,
@@ -28,10 +28,11 @@ export const useQRCode = () => {
     loading: false
   })
 
+  const [qrShortId, setQrShortId] = useState<string | null>(null);
+
   const router = useRouter()
   const qrRef = useRef<HTMLDivElement>(null)
   const desktopQrRef = useRef<HTMLDivElement>(null)
-  const qrCodeInstance = useRef<QRCodeStyling | null>(null)
 
   const handleStyleSelection = (index: number) => {
     setState(prev => ({
@@ -43,71 +44,83 @@ export const useQRCode = () => {
   }
 
   useEffect(() => {
-    if (state.selectedStyleIndex === null) return
+    if (!qrRef.current || !state.url) return
 
-    const defaultBgColor =
-      state.bgColor || qrCodeStyles[state.selectedStyleIndex]?.backgroundColor || '#ffffff'
-    const defaultQrColor =
-      state.qrColor || qrCodeStyles[state.selectedStyleIndex]?.color || '#000000'
+    const origin = typeof window !== 'undefined' ? window.location.origin : ''
+    const qrUrl = qrShortId 
+      ? `${origin}/api/v1/qr?shortId=${qrShortId}&targetUrl=${state.url}` 
+      : `${origin}/api/v1/qr?shortId=find&targetUrl=${state.url}`
+
+    const defaultColor = qrCodeStyles[state.selectedStyleIndex || 0]?.color || '#000000'
 
     const qrOptions: QRCodeOptions = {
       width: state.width,
       height: state.width,
-      data: state.url || 'https://example.com',
+      data: qrUrl,
       image: siteConfig.qrlogo,
       dotsOptions: {
-        color: defaultQrColor,
+        color: state.qrColor || defaultColor,
         type: state.dotType
       },
       cornersSquareOptions: {
         type: state.cornerType,
-        color: defaultQrColor
+        color: state.qrColor || defaultColor
       },
       cornersDotOptions: {
         type: state.cornerDotType,
-        color: defaultQrColor
+        color: state.qrColor || defaultColor
       },
       backgroundOptions: {
-        color: defaultBgColor
+        color: state.bgColor || '#FFFFFF'
       },
       imageOptions: {
         hideBackgroundDots: true,
         imageSize: 0.4,
-        margin: 0
+        margin: 10
       },
-      margin: state.margin,
+      margin: state.margin || 20,
       qrOptions: {
         errorCorrectionLevel: 'H'
       }
     }
 
-    setState(prev => ({
-      ...prev,
-      qrColor: defaultQrColor,
-      bgColor: defaultBgColor
-    }))
-
+    // Clear previous QR code
     if (qrRef.current) {
       qrRef.current.innerHTML = ''
-      qrCodeInstance.current = new QRCodeStyling(qrOptions)
-      qrCodeInstance.current.append(qrRef.current)
     }
 
+    const qr = new QRCodeStyling(qrOptions)
+    qr.append(qrRef.current)
+
+    // Also update desktop preview if it exists
     if (desktopQrRef.current) {
       desktopQrRef.current.innerHTML = ''
-      const desktopQrInstance = new QRCodeStyling(qrOptions)
-      desktopQrInstance.append(desktopQrRef.current)
+      const desktopQr = new QRCodeStyling({
+        ...qrOptions,
+        width: 300,
+        height: 300
+      })
+      desktopQr.append(desktopQrRef.current)
+    }
+
+    return () => {
+      if (qrRef.current) {
+        qrRef.current.innerHTML = ''
+      }
+      if (desktopQrRef.current) {
+        desktopQrRef.current.innerHTML = ''
+      }
     }
   }, [
     state.url,
-    state.selectedStyleIndex,
+    state.width,
     state.qrColor,
     state.bgColor,
-    state.width,
+    state.dotType,
     state.cornerType,
     state.cornerDotType,
-    state.dotType,
-    state.margin
+    state.selectedStyleIndex,
+    qrShortId
   ])
 
   const handleDownload = async () => {
@@ -117,10 +130,10 @@ export const useQRCode = () => {
     try {
       setState(prev => ({ ...prev, loading: true }))
 
-      const qrOptions = {
+      const qrOptions: QRCodeOptions = {
         width: state.width,
         height: state.width,
-        data: state.url || 'https://example.com',
+        data: state.url || '',
         image: siteConfig.qrlogo,
         dotsOptions: {
           color: state.qrColor || qrCodeStyles[state.selectedStyleIndex]?.color || '#000000',
@@ -128,16 +141,24 @@ export const useQRCode = () => {
         },
         cornersSquareOptions: {
           type: state.cornerType,
-          color: state.qrColor
+          color: state.qrColor || qrCodeStyles[state.selectedStyleIndex]?.color || '#000000'
         },
         cornersDotOptions: {
           type: state.cornerDotType,
-          color: state.qrColor
+          color: state.qrColor || qrCodeStyles[state.selectedStyleIndex]?.color || '#000000'
         },
         backgroundOptions: {
           color: state.bgColor || '#ffffff'
         },
-        margin: state.margin
+        margin: state.margin || 20,
+        qrOptions: {
+          errorCorrectionLevel: 'H'
+        },
+        imageOptions: {
+          hideBackgroundDots: true,
+          imageSize: 0.4,
+          margin: 10
+        }
       }
 
       const formData = new FormData()
@@ -151,7 +172,46 @@ export const useQRCode = () => {
         throw new Error('Failed to save QR metadata to backend')
       }
 
-      const canvas = activeQrRef.querySelector('canvas')
+      // Set the shortId and wait for state update
+      setQrShortId(response.qrCode.shortId)
+      
+      // Add a small delay to ensure QR code is updated with new shortId
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      const origin = typeof window !== 'undefined' ? window.location.origin : ''
+      const finalQrUrl = `${origin}/api/v1/qr?shortId=${response.qrCode.shortId}&targetUrl=${state.url}`
+
+      // Create new QR code with final URL for download
+      const downloadQrOptions: QRCodeOptions = {
+        ...qrOptions,
+        data: finalQrUrl,
+        imageOptions: {
+          hideBackgroundDots: true,
+          imageSize: 0.4,
+          margin: 10
+        }
+      }
+
+      // Create an Image element to preload the logo
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.src = siteConfig.qrlogo
+
+      // Wait for image to load before creating QR
+      await new Promise((resolve, reject) => {
+        img.onload = resolve
+        img.onerror = reject
+        setTimeout(resolve, 1000) // Fallback timeout
+      })
+
+      const downloadQr = new QRCodeStyling(downloadQrOptions)
+      const tempDiv = document.createElement('div')
+      downloadQr.append(tempDiv)
+
+      // Wait for QR code to render and image to load
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      const canvas = tempDiv.querySelector('canvas')
       if (!canvas) {
         throw new Error('QR code canvas not found')
       }
@@ -171,7 +231,7 @@ export const useQRCode = () => {
       ctx.drawImage(canvas, padding, padding)
 
       const link = document.createElement('a')
-      link.download = 'qr-code.png'
+      link.download = `qr-code-${response.qrCode.shortId}.png`
       link.href = paddedCanvas.toDataURL('image/png')
       link.click()
 

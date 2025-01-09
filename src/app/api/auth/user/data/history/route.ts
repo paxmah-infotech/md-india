@@ -14,6 +14,11 @@ export async function GET(request: NextRequest) {
     // Get the userId from the token
     const { id: userId } = token;
 
+    if(!userId){
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    // Connect to the database
     await dbConnect();
 
     // Parse query parameters for pagination

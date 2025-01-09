@@ -16,7 +16,7 @@ export const QRPreview: React.FC<QRPreviewProps> = ({
   onDownload
 }) => {
   return (
-    <div className=' p-1 z-0 '>
+    <div className=' p-1 z-0'>
       {/* <h2 className='text-sm font-semibold text-gray-800 mb-4'>QR Code Preview</h2> */}
       <div
         ref={qrRef}

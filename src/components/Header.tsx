@@ -88,13 +88,16 @@ const Header: React.FC = () => {
               </Link>
             ))}
             {status === 'authenticated' ? (
-              <button
+              <>
+              {/* <button
                 onClick={handleConfirmOpen}
                 className="flex items-center px-2 md:px-3 py-1.5 md:py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"
               >
                 <LuLogOut className="mr-1.5 h-4 w-4" />
                 Logout
-              </button>
+              </button> */}
+              </>
+
             ) : (
               <Link
                 href="/auth/signin"

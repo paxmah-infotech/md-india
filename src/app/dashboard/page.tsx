@@ -11,7 +11,7 @@ import ScanModal from '@/components/common/ScanModal'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { Pagination } from '@nextui-org/react'
-import RecentActivity from '@/components/dashboard/RecentActivity'
+// import RecentActivity from '@/components/dashboard/RecentActivity'
 import UsageGraph from '@/components/dashboard/UsageGraph'
 import { useAppContext } from '@/context/useContext'
 import QRCodeCard from '@/components/QRCodeCard'
@@ -22,7 +22,7 @@ import toast from 'react-hot-toast'
 
 const Dashboard: React.FC = () => {
   const { data: session } = useSession()
-  const router = useRouter()
+  // const router = useRouter()
   const [dashboardData, setDashboardData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -375,7 +375,7 @@ const Dashboard: React.FC = () => {
         </section>
 
         <div className="mt-8">
-          <RecentActivity />
+          {/* <RecentActivity /> */}
         </div>
 
         <ScanModal qrCodeId={selectedScan?._id} totalScans={selectedScan?.scanCount} isOpen={!!selectedScan} closeModal={handleCloseScanModal} closeModalRef={closeModalRef} />

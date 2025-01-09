@@ -15,7 +15,6 @@ export default function StylishQRCode() {
     setState,
     qrRef,
     desktopQrRef,
-    handleStyleSelection,
     handleDownload
   } = useQRCode()
 
@@ -23,27 +22,41 @@ export default function StylishQRCode() {
     setState(prev => ({ ...prev, ...update }))
   }
 
-  useEffect(() => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    qrCodeStyles.forEach((style, index) => {
-      const qrCodeInstance = new QRCodeStyling({
-        ...style,
-        width: 85,
-        height: 85,
-        image: siteConfig.qrlogo,
-        data: `${origin}/api/v1/qr?shortId=find&targetUrl=${state.url}`,
-        backgroundOptions: {
-          color: state.bgColor
-        },
-        dotsOptions: {
-          ...style.dotsOptions,
-          color: style.color
-        }
+  const handleStyleSelection = (index: number) => {
+    const selectedStyle = qrCodeStyles[index]
+    if (selectedStyle) {
+      updateState({
+        selectedStyleIndex: index,
+        dotType: selectedStyle.dotsOptions?.type || 'square',
+        cornerType: selectedStyle.cornersSquareOptions?.type || 'square',
+        qrColor: selectedStyle.color || '#000000',
+        bgColor: selectedStyle.backgroundColor || '#FFFFFF'
       })
+    }
+  }
 
-      const qrContainer = document.getElementById(`qr-preview-${index}`)
-      if (qrContainer && qrContainer.childElementCount === 0) {
-        qrCodeInstance.append(qrContainer)
+  useEffect(() => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_BASE_URL;
+    
+    // Only generate style gallery QR codes, not the preview
+    qrCodeStyles.forEach((style, index) => {
+      const container = document.getElementById(`qr-preview-${index}`)
+      if (container && container.childElementCount === 0) {
+        const qrCodeInstance = new QRCodeStyling({
+          ...style,
+          width: 85,
+          height: 85,
+          image: siteConfig.qrlogo,
+          data: `${origin}/api/v1/qr?shortId=find&targetUrl=${state.url}`,
+          backgroundOptions: {
+            color: state.bgColor
+          },
+          dotsOptions: {
+            ...style.dotsOptions,
+            color: style.color
+          }
+        })
+        qrCodeInstance.append(container)
       }
     })
   }, [qrCodeStyles, state.bgColor])
@@ -94,47 +107,65 @@ export default function StylishQRCode() {
 
       {/* Desktop Layout */}
       <div className='hidden lg:block max-w-7xl mx-auto'>
-        <div className='grid grid-cols-2 gap-8'>
+        <div className='flex flex-col lg:flex-row gap-6 px-4 py-6'>
           {/* Left side - Controls */}
-          <div className='space-y-6'>
-            <div className='flex items-center gap-3 mb-6'>
-              <div className='h-8 w-2 bg-blue-500 rounded-full'></div>
-              <h1 className='text-2xl font-bold text-gray-800'>QR Code Generator</h1>
-            </div>
-
+          <div className='w-full lg:w-1/2 space-y-6'>
             <QRControls
-              {...state}
-              onUrlChange={e => updateState({ url: e.target.value })}
-              onTitleChange={e => updateState({ title: e.target.value })}
-              onTextChange={e => updateState({ textContent: e.target.value })}
+              url={state.url}
+              title={state.title}
+              textContent={state.textContent}
+              showUrl={true}
+              showTitle={state.showTitle}
+              showText={state.showText}
+              cornerType={state.cornerType}
+              dotType={state.dotType}
+              cornerDotType={state.cornerDotType}
+              margin={state.margin}
+              width={state.width}
+              bgColor={state.bgColor}
+              qrColor={state.qrColor}
+              onUrlChange={(e) => updateState({ url: e.target.value })}
+              onTitleChange={(e) => updateState({ title: e.target.value })}
+              onTextChange={(e) => updateState({ textContent: e.target.value })}
               onShowTitleChange={() => updateState({ showTitle: !state.showTitle })}
               onShowTextChange={() => updateState({ showText: !state.showText })}
-              onCornerTypeChange={e => updateState({ cornerType: e.target.value as CornerSquareType })}
-              onDotTypeChange={e => updateState({ dotType: e.target.value as DotType })}
-              onCornerDotTypeChange={e => updateState({ cornerDotType: e.target.value as CornerDotType })}
-              onWidthChange={e => updateState({ width: Number(e.target.value) })}
-              onMarginChange={e => updateState({ margin: Number(e.target.value) })}
-              onBgColorChange={e => updateState({ bgColor: e.target.value })}
-              onQrColorChange={e => updateState({ qrColor: e.target.value })}
+              onCornerTypeChange={(e) => updateState({ cornerType: e.target.value as CornerSquareType })}
+              onDotTypeChange={(e) => updateState({ dotType: e.target.value as DotType })}
+              onCornerDotTypeChange={(e) => updateState({ cornerDotType: e.target.value as CornerDotType })}
+              onWidthChange={(e) => updateState({ width: Number(e.target.value) })}
+              onMarginChange={(e) => updateState({ margin: Number(e.target.value) })}
+              onBgColorChange={(e) => updateState({ bgColor: e.target.value })}
+              onQrColorChange={(e) => updateState({ qrColor: e.target.value })}
             />
           </div>
 
-          {/* Right side - Preview */}
-          <div className='space-y-6'>
-            <QRPreview
-              qrRef={desktopQrRef}
-              width={state.width}
-              loading={state.loading}
-              onDownload={handleDownload}
-            />
+          {/* Right side - Preview and Style Gallery */}
+          <div className='w-full lg:w-1/2 z-30'>
+            <div className='lg:sticky lg:top-24 space-y-6'>
+              {/* QR Preview */}
+              <div className='bg-white p-6 rounded-xl shadow-sm border border-gray-100'>
+                <h3 className='text-sm font-semibold text-gray-700 mb-4'>QR Code Preview</h3>
+                <div ref={desktopQrRef} className='flex justify-center' />
+                <button
+                  onClick={handleDownload}
+                  className='mt-4 w-full py-2 text-sm text-white font-medium bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2'
+                >
+                  <svg className='w-4 h-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4' />
+                  </svg>
+                  Download QR Code
+                </button>
+              </div>
 
-            <StyleGallery
-              styles={qrCodeStyles}
-              visibleQrs={state.visibleQrs}
-              selectedStyleIndex={state.selectedStyleIndex}
-              onStyleSelect={handleStyleSelection}
-              onShowMore={() => updateState({ visibleQrs: state.visibleQrs + 8 })}
-            />
+              {/* Style Gallery */}
+              <StyleGallery
+                styles={qrCodeStyles}
+                visibleQrs={state.visibleQrs}
+                selectedStyleIndex={state.selectedStyleIndex}
+                onStyleSelect={handleStyleSelection}
+                onShowMore={() => updateState({ visibleQrs: state.visibleQrs + 8 })}
+              />
+            </div>
           </div>
         </div>
       </div>

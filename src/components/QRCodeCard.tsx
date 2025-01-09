@@ -1,7 +1,7 @@
-import { FC, useRef } from 'react';
+import { FC, useRef, useEffect } from 'react';
 import { IoMdShare, IoMdTrash, IoMdDownload } from 'react-icons/io';
 import { motion } from 'framer-motion';
-import QRCode from 'qrcode';
+import QRCodeStyling, { DotType, CornerSquareType, CornerDotType } from 'qr-code-styling';
 
 interface QRCodeCardProps {
   qrCode: any;
@@ -30,108 +30,149 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
   setShowConfirm,
   setQrIdForDelete
 }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const qrRef = useRef<QRCodeStyling>();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !qrCode?.qrOptions) return;
+
+    // Clear previous content
+    container.innerHTML = '';
+
+    // Get the absolute path for the image
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const imagePath = qrCode.qrOptions.image?.startsWith('/')
+      ? `${origin}${qrCode.qrOptions.image}`
+      : qrCode.qrOptions.image;
+
+    // Create QR code options with proper types
+    const qrOptions = {
+      width: 120,
+      height: 120,
+      data: qrCode.qrOptions.data,
+      image: imagePath,
+      dotsOptions: {
+        color: qrCode.qrOptions.dotsOptions?.color || '#000000',
+        type: qrCode.qrOptions.dotsOptions?.type as DotType || 'square'
+      },
+      cornersSquareOptions: {
+        color: qrCode.qrOptions.cornersSquareOptions?.color || '#000000',
+        type: qrCode.qrOptions.cornersSquareOptions?.type as CornerSquareType || 'square'
+      },
+      cornersDotOptions: {
+        color: qrCode.qrOptions.cornersDotOptions?.color || '#000000',
+        type: qrCode.qrOptions.cornersDotOptions?.type as CornerDotType || 'square'
+      },
+      backgroundOptions: {
+        color: qrCode.qrOptions.backgroundOptions?.color || '#ffffff',
+      },
+      imageOptions: {
+        hideBackgroundDots: true,
+        imageSize: 0.5,  // Increased from 0.4 to 0.5 for larger logo
+        margin: 5,       // Reduced margin to give more space for the logo
+        crossOrigin: 'anonymous',
+      }
+    };
+
+    // Create QR code instance
+    qrRef.current = new QRCodeStyling(qrOptions);
+
+    // Append to container
+    qrRef.current.append(container);
+
+    // Cleanup
+    return () => {
+      if (container) {
+        container.innerHTML = '';
+      }
+    };
+  }, [qrCode, qrPreview]);
 
   const handleDownload = async () => {
-    if (typeof window === 'undefined') return;
+    if (!qrRef.current || !qrCode?.qrOptions?.data) return;
 
     try {
-      // Create a temporary canvas with white background
-      const tempCanvas = document.createElement('canvas');
-      const size = 500; // Larger size for better quality
-      tempCanvas.width = size;
-      tempCanvas.height = size;
+      // Get the absolute path for the image
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const imagePath = qrCode.qrOptions.image?.startsWith('/')
+        ? `${origin}${qrCode.qrOptions.image}`
+        : qrCode.qrOptions.image;
 
-      // Generate QR code directly on the canvas
-      console.log("qr code is here , ", qrCode?.qrOptions?.data)
-      await QRCode.toCanvas(tempCanvas, qrCode?.qrOptions?.data || '', {
-        width: size,
-        margin: 2,
-        color: {
-          dark: qrCode?.qrOptions?.dotsOptions?.color || '#000000',
-          light: '#ffffff'
+      // Create a new QR code instance with higher quality settings
+      const downloadQr = new QRCodeStyling({
+        ...qrCode.qrOptions,
+        width: 800,  // Increased size for better quality
+        height: 800,
+        image: imagePath,
+        dotsOptions: {
+          ...qrCode.qrOptions.dotsOptions,
+          type: qrCode.qrOptions.dotsOptions?.type as DotType || 'square'
         },
-        // Add any other QR code options from qrCode.qrOptions here
+        cornersSquareOptions: {
+          ...qrCode.qrOptions.cornersSquareOptions,
+          type: qrCode.qrOptions.cornersSquareOptions?.type as CornerSquareType || 'square'
+        },
+        cornersDotOptions: {
+          ...qrCode.qrOptions.cornersDotOptions,
+          type: qrCode.qrOptions.cornersDotOptions?.type as CornerDotType || 'square'
+        },
+        imageOptions: {
+          hideBackgroundDots: true,
+          imageSize: 0.5,
+          margin: 5,
+          crossOrigin: 'anonymous',
+        }
       });
 
-      // Convert to blob
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        tempCanvas.toBlob((blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Failed to create blob'));
-          }
-        }, 'image/png', 1.0);
+      // Download with higher quality
+      await downloadQr.download({
+        name: `qr-code-${qrCode.shortId}`,
+        extension: 'png'
       });
-
-      // Create download link
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${qrCode.title || 'qr-code'}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
     } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert('An error occurred while downloading the QR code');
-      }
+      console.error('Error downloading QR code:', error);
+      alert('Failed to download QR code');
     }
   };
 
   return (
-    <div
-      key={qrCode._id}
-      className='flex bg-white shadow-md rounded-lg items-center p-4 hover:shadow-lg transition-shadow duration-200 relative'
-    >
+    <div className='relative bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-start space-x-4'>
       {/* QR Code on the Left */}
       <div
-        ref={qrPreview}
-        className='flex-shrink-0 flex items-center justify-center bg-gray-100 rounded-md'
-        style={{
-          width: '100px',
-          height: '100px'
-        }}
+        className='flex-shrink-0 flex items-center justify-center bg-gray-100 rounded-md cursor-pointer'
+        style={{ width: '120px', height: '120px' }}
         onClick={() => handleViewLargeQR(qrCode, index)}
       >
-        <canvas ref={canvasRef} />
+        <div 
+          ref={el => {
+            if (el) {
+              containerRef.current = el;
+              if (qrPreview) qrPreview(el);
+            }
+          }}
+          className="flex items-center justify-center w-full h-full" 
+        />
       </div>
 
-      {/* Details on the Right */}
-      <div className='ml-4 flex flex-col justify flex-1 overflow-hidden'>
-        {qrCode.showTitle && (
-          <h3 className='text-sm font-medium text-gray-800 mb-1 truncate'>
-            {qrCode.title}
-          </h3>
-        )}
-        <p className='text-gray-600 text-sm mb-1'>
-          Scans: {qrCode.scanCount}
+      {/* Content on the Right */}
+      <div className='flex-grow min-w-0'>
+        <h3 className='text-sm font-medium text-gray-900 truncate'>
+          {qrCode.title}
+        </h3>
+        <p className='mt-1 text-sm text-gray-500 truncate'>
+          {qrCode.targetUrl}
         </p>
-        <p className='text-sm text-gray-500 truncate'>
-          Target URL:{' '}
-          <a
-            href={qrCode?.targetUrl}
-            target='_blank'
-            rel='noopener noreferrer'
-            className='text-blue-500 underline break-all'
-          >
-            {qrCode?.targetUrl || ''}
-          </a>
-        </p>
-        {qrCode?.scanCount > 0 && (
+        <div className='mt-2 flex items-center space-x-2'>
           <button
-            className={`text-xs p-0.5 px-1 flex border bg-[${
-              qrCode?.qrOptions?.dotsOptions?.color || 'bg-gray-500'
-            }] rounded-md text-gray-300 w-20`}
+            className='text-xs p-0.5 px-1 flex border rounded-md text-gray-300 w-20'
+            style={{ backgroundColor: qrCode?.qrOptions?.dotsOptions?.color || '#4a5568' }}
             onClick={() => handleOpenScanModal(qrCode)}
           >
             View Scans
           </button>
-        )}
+        </div>
+        {qrCode?.scanCount > 0 && <span className='text-xs text-gray-500'>scan counts : {qrCode?.scanCount}</span>}
       </div>
 
       {/* MoreVert Icon with Dropdown */}
@@ -146,6 +187,7 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
         >
           ⋮
         </motion.button>
+
         {selectedQRCode && selectedQRCode._id === qrCode._id && (
           <div
             ref={closeOptions}
@@ -168,7 +210,7 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
             <button
               onClick={() => {
                 setShowConfirm(true);
-                setQrIdForDelete(selectedQRCode?._id)
+                setQrIdForDelete(selectedQRCode?._id);
               }}
               className='w-full px-4 py-2 text-left text-red-500 hover:bg-red-100 flex items-center space-x-2'
             >

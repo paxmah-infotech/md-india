@@ -27,7 +27,7 @@ export async function GET (request: NextRequest) {
     const ipInfo = await getIPInfo(clientIP)
 
     if (!ipInfo.success || !ipInfo.data) {
-      console.error('Failed to get IP info:', ipInfo.error)
+      // console.error('Failed to get IP info:', ipInfo.error)
       return NextResponse.json(
         { error: 'Failed to get location information' },
         { status: 500 }
@@ -40,7 +40,7 @@ export async function GET (request: NextRequest) {
       userAgent: request.headers.get('user-agent') || 'Unknown User-Agent',
       referer: request.headers.get('referer') || 'No Referrer'
     }
-
+// console.log("short id : ", shortId)
     // Find and update QR Code
     const qrCode = await QRCode.findOneAndUpdate(
       { shortId },
@@ -62,6 +62,7 @@ export async function GET (request: NextRequest) {
       })
     }
 
+    // console.log('qrcode ', qrCode)
     // Perform the redirect
     return NextResponse.redirect(targetUrl, 302)
   } catch (error) {
