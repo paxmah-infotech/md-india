@@ -14,13 +14,13 @@ export const useQRCode = () => {
     bgColor: '#ffffff',
     qrColor: '',
     title: 'Scan Me',
-    image: siteConfig.qrlogo,
+    // image: siteConfig.qrlogo,
     showTitle: true,
     showText: true,
     textContent: '',
     qrCreated: false,
-    cornerType: 'square',
-    dotType: 'square',
+    cornerType: 'extra-rounded',
+    dotType: 'rounded',
     cornerDotType: 'square',
     margin: 20,
     width: 300,
@@ -57,7 +57,7 @@ export const useQRCode = () => {
       width: state.width,
       height: state.width,
       data: qrUrl,
-      image: siteConfig.qrlogo,
+      // image: siteConfig.qrlogo,
       dotsOptions: {
         color: state.qrColor || defaultColor,
         type: state.dotType
@@ -120,7 +120,7 @@ export const useQRCode = () => {
     state.cornerType,
     state.cornerDotType,
     state.selectedStyleIndex,
-    qrShortId
+    qrShortId,
   ])
 
   const handleDownload = async () => {
@@ -134,7 +134,7 @@ export const useQRCode = () => {
         width: state.width,
         height: state.width,
         data: state.url || '',
-        image: siteConfig.qrlogo,
+        // image: siteConfig.qrlogo,
         dotsOptions: {
           color: state.qrColor || qrCodeStyles[state.selectedStyleIndex]?.color || '#000000',
           type: state.dotType

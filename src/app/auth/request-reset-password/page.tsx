@@ -164,6 +164,6 @@ export default function RequestResetPassword() {
         </div>
       </div>
     </div>
-    </>
+  </>
   );
 }

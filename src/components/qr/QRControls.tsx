@@ -94,10 +94,11 @@ export const QRControls: React.FC<QRControlsProps> = ({
               type='text'
               value={title}
               onChange={onTitleChange}
+              maxLength={60}
               className='w-full border border-gray-200 rounded-lg p-3 text-sm'
               placeholder='Enter QR title'
             />
-            <label className='flex items-center gap-2 text-sm text-gray-600 mt-2'>
+            {/* <label className='flex items-center gap-2 text-sm text-gray-600 mt-2'>
               <input
                 type='checkbox'
                 checked={showTitle}
@@ -105,10 +106,10 @@ export const QRControls: React.FC<QRControlsProps> = ({
                 className='w-4 h-4 rounded border-gray-300 text-blue-500'
               />
               Show title in QR code
-            </label>
+            </label> */}
           </div>
 
-          <div>
+          {/* <div>
             <label className='block text-sm font-medium text-gray-700 mb-2'>
               Additional Text
             </label>
@@ -127,7 +128,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
               />
               Show text in QR code
             </label>
-          </div>
+          </div> */}
         </div>
       </div>
 

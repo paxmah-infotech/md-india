@@ -229,7 +229,7 @@ export default function StylishQRCode () {
       width,
       height: width,
       data: url || 'https://example.com',
-      image: siteConfig.qrlogo,
+      // image: siteConfig.qrlogo,
       dotsOptions: {
         color: defaultQrColor,
         type: dotType

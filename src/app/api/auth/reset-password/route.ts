@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       }
 
       const user = await User.findOne({ email })
-      console.log("user:", user)
+      // console.log("user:", user)
 
       if (!user) {
         return NextResponse.json(
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       )
     }
   } catch (error) {
-    console.error('Error processing request:', error)
+    // console.error('Error processing request:', error)
     return NextResponse.json(
       { success: false, message: 'An error occurred while processing your request.' },
       { status: 500 }

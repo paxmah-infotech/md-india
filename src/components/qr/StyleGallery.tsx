@@ -49,7 +49,7 @@ export const StyleGallery: React.FC<StyleGalleryProps> = ({
           height: 85,
           type: 'svg',
           data: `${window.location.origin}/api/v1/qr?shortId=find&targetUrl=${encodeURIComponent('https://example.com')}`,
-          image: siteConfig.qrlogo,
+          // image: siteConfig.qrlogo,
           dotsOptions: {
             color: style.color || '#000000',
             type: style.dotsOptions?.type || 'square'

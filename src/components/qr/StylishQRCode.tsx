@@ -73,6 +73,7 @@ export default function StylishQRCode() {
               width={state.width}
               loading={state.loading}
               onDownload={handleDownload}
+              title={state.title}
             />
           </div>
         </div>
@@ -145,6 +146,8 @@ export default function StylishQRCode() {
               {/* QR Preview */}
               <div className='bg-white p-6 rounded-xl shadow-sm border border-gray-100'>
                 <h3 className='text-sm font-semibold text-gray-700 mb-4'>QR Code Preview</h3>
+                {/* title  */}
+                <span className='text-xs text-center w-full flex items-center justify-center mb-4 italic'>{state.title}</span>
                 <div ref={desktopQrRef} className='flex justify-center' />
                 <button
                   onClick={handleDownload}

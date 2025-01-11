@@ -57,7 +57,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex h-auto sm:h-18 lg:h-20 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
+          <Link href="/" className="overflow-hidden   max-h-full flex items-center space-x-2 sm:space-x-3">
             <Image
               src={siteConfig.logo}
               alt={siteConfig.name}

@@ -37,21 +37,21 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
     const container = containerRef.current;
     if (!container || !qrCode?.qrOptions) return;
 
-    // Clear previous content
-    container.innerHTML = '';
-
-    // Get the absolute path for the image
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const imagePath = qrCode.qrOptions.image?.startsWith('/')
-      ? `${origin}${qrCode.qrOptions.image}`
-      : qrCode.qrOptions.image;
+    // Clear any existing QR code instance
+    if (qrRef.current) {
+      try {
+        container.innerHTML = '';
+        qrRef.current = undefined;
+      } catch (error) {
+        console.error('Error cleaning up QR code:', error);
+      }
+    }
 
     // Create QR code options with proper types
     const qrOptions = {
       width: 120,
       height: 120,
       data: qrCode.qrOptions.data,
-      image: imagePath,
       dotsOptions: {
         color: qrCode.qrOptions.dotsOptions?.color || '#000000',
         type: qrCode.qrOptions.dotsOptions?.type as DotType || 'square'
@@ -69,22 +69,25 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
       },
       imageOptions: {
         hideBackgroundDots: true,
-        imageSize: 0.5,  // Increased from 0.4 to 0.5 for larger logo
-        margin: 5,       // Reduced margin to give more space for the logo
+        imageSize: 0.5,
+        margin: 5,
         crossOrigin: 'anonymous',
       }
     };
 
-    // Create QR code instance
+    // Create new QR code instance
     qrRef.current = new QRCodeStyling(qrOptions);
 
     // Append to container
     qrRef.current.append(container);
 
-    // Cleanup
+    // Cleanup function
     return () => {
       if (container) {
         container.innerHTML = '';
+      }
+      if (qrRef.current) {
+        qrRef.current = undefined;
       }
     };
   }, [qrCode, qrPreview]);
@@ -104,7 +107,7 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
         ...qrCode.qrOptions,
         width: 800,  // Increased size for better quality
         height: 800,
-        image: imagePath,
+        // image: imagePath,
         dotsOptions: {
           ...qrCode.qrOptions.dotsOptions,
           type: qrCode.qrOptions.dotsOptions?.type as DotType || 'square'

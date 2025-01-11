@@ -3,19 +3,18 @@ import { DotType, CornerSquareType, CornerDotType } from 'qr-code-styling'
 
 export const qrCodeStyles: QRCodeStyle[] = [
   {
-    name: 'Orange Classy',
-   
-    dotsOptions: { type: 'dots' as DotType },
+    name: 'Green Dots',
+    dotsOptions: { type: 'rounded' as DotType },
     cornersSquareOptions: { type: 'extra-rounded' as CornerSquareType },
     backgroundColor: '#ffffff',
-    color: '#ff5722'
+    color: '#4caf50',
   },
   {
-    name: 'Green Dots',
-   dotsOptions: { type: 'dots' as DotType },
-    cornersSquareOptions: { type: 'square' as CornerSquareType },
+    name: 'Orange Classy',
+    dotsOptions: { type: 'dots' as DotType },
+    cornersSquareOptions: { type: 'dot' as CornerSquareType },
     backgroundColor: '#ffffff',
-    color: '#4caf50'
+    color: '#ff5722'
   },
   {
     name: 'Red Square',
@@ -23,13 +22,6 @@ export const qrCodeStyles: QRCodeStyle[] = [
     cornersSquareOptions: { type: 'square' as CornerSquareType },
     backgroundColor: '#ffffff',
     color: '#000000'
-  },
-  {
-    name: 'Blue Dots',
-    dotsOptions: { type: 'dots' as DotType },
-    cornersSquareOptions: { type: 'dot' as CornerSquareType },
-    backgroundColor: '#ffffff',
-    color: '#2196f3'
   }
 ]
 

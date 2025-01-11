@@ -6,18 +6,21 @@ interface QRPreviewProps {
   qrRef: React.RefObject<HTMLDivElement>
   width: number
   loading: boolean
-  onDownload: () => void
+  onDownload: () => void,
+  title?: string
 }
 
 export const QRPreview: React.FC<QRPreviewProps> = ({
   qrRef,
   width,
   loading,
-  onDownload
+  onDownload,
+  title
 }) => {
+  console.log("title : ", title)
   return (
     <div className=' p-1 z-0'>
-      {/* <h2 className='text-sm font-semibold text-gray-800 mb-4'>QR Code Preview</h2> */}
+      <span className='text-sm text-balanced mb-4'>{title}</span>
       <div
         ref={qrRef}
         className='flex justify-center items-center'
