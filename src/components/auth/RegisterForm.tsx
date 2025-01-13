@@ -1,4 +1,4 @@
-"use client";
+
 
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { Input } from '@nextui-org/input';
