@@ -1,4 +1,4 @@
-
+"use client";
 
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { Input } from '@nextui-org/input';
@@ -29,7 +29,7 @@ export default function RegisterForm() {
     const data = await response.json();
 
     if (data.success) {
-      setSuccess('Registration successful! Verify your account and sign in now.');
+      setSuccess('Registration successful! You can now sign in.');
       setEmail('');
       setPassword('');
       setTimeout(() => {
