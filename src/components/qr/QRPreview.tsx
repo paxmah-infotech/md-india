@@ -17,10 +17,10 @@ export const QRPreview: React.FC<QRPreviewProps> = ({
   onDownload,
   title
 }) => {
-  console.log("title : ", title)
+  // console.log("title : ", title)
   return (
     <div className=' p-1 z-0'>
-      <span className='text-sm text-balanced mb-4'>{title}</span>
+      {/* <span className='text-sm text-balanced mb-4'>{title}</span> */}
       <div
         ref={qrRef}
         className='flex justify-center items-center'

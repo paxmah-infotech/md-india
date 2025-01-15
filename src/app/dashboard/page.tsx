@@ -216,19 +216,21 @@ const Dashboard: React.FC = () => {
 
   const handleShare = (qrCode: any) => {
     const shareUrl = qrCode?.targetUrl
-    if (navigator.share) {
-      navigator
-        .share({
-          title: 'QR Code',
-          url: shareUrl
-        })
-        .then(() => console.log('Shared successfully'))
-        .catch(error => console.error('Error sharing:', error))
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(shareUrl.toString())
+        .then(() => alert('URL copied to clipboard!'))
+        .catch(error => console.error('Error copying to clipboard:', error));
     } else {
-      // Fallback logic for unsupported browsers
-      navigator?.clipboard?.writeText(shareUrl.toString())
-      alert('URL copied to clipboard!')
+      // Fallback for older browsers
+      const tempInput = document.createElement('input');
+      document.body.appendChild(tempInput);
+      tempInput.value = shareUrl.toString();
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      alert('URL copied to clipboard!');
     }
+    
     setSelectedQRCode(null) // Close dropdown
   }
 

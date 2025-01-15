@@ -207,7 +207,7 @@ const Profile: React.FC = () => {
                   htmlFor='email'
                   className='block text-sm font-medium text-gray-700'
                 >
-                  Email
+                  Email <span className='text-xs text-gray-500'>(Read Only)</span>
                 </label>
                 <input
                   id='email'

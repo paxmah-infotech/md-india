@@ -58,7 +58,7 @@ export default function Documentation() {
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mt-8">
+        {/* <div className="max-w-2xl mx-auto mt-8">
           <div className="relative">
             <input
               type="text"
@@ -71,7 +71,7 @@ export default function Documentation() {
               </svg>
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Documentation Grid */}
         <div className="max-w-7xl mx-auto mt-16">

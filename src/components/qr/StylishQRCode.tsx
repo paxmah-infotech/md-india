@@ -147,8 +147,9 @@ export default function StylishQRCode() {
               <div className='bg-white p-6 rounded-xl shadow-sm border border-gray-100'>
                 <h3 className='text-sm font-semibold text-gray-700 mb-4'>QR Code Preview</h3>
                 {/* title  */}
-                <span className='text-xs text-center w-full flex items-center justify-center mb-4 italic'>{state.title}</span>
+                {/* <span className=' text-center font-bold w-full flex items-center justify-center  '>{state.title}</span> */}
                 <div ref={desktopQrRef} className='flex justify-center' />
+                {/* <span className='text-sm  font-extralight text-start w-full px-16 flex items-center justify-center'>{`Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam, voluptas.`}</span> */}
                 <button
                   onClick={handleDownload}
                   className='mt-4 w-full py-2 text-sm text-white font-medium bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2'

@@ -101,19 +101,13 @@ export async function POST(request: NextRequest) {
     const savedUser = await newUser.save();
 
     // Send verification email
-    await sendEmail({
-      email: value.email,
-      emailType: "VERIFY",
-      userId: savedUser._id,
-    });
+    await sendEmail({ email: savedUser.email, emailType: "VERIFY", userId: savedUser._id });
 
-    const sanitizedUser = sanitizeUser(savedUser);
-    
     return NextResponse.json(
       { 
         success: true, 
-        message: "User created successfully", 
-        user: sanitizedUser 
+        message: "Registration successful! A verification email has been sent to your address. Please note that it may take up to 10 minutes to receive the email due to server processing. The verification link will be valid for 24 hours.",
+        user: sanitizeUser(savedUser)
       },
       { 
         status: 201,

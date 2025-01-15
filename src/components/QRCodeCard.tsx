@@ -1,7 +1,8 @@
 import { FC, useRef, useEffect } from 'react';
-import { IoMdShare, IoMdTrash, IoMdDownload } from 'react-icons/io';
+import { IoMdTrash, IoMdDownload } from 'react-icons/io';
 import { motion } from 'framer-motion';
 import QRCodeStyling, { DotType, CornerSquareType, CornerDotType } from 'qr-code-styling';
+import { MdOutlineContentCopy } from 'react-icons/md';
 
 interface QRCodeCardProps {
   qrCode: any;
@@ -200,8 +201,8 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
               onClick={() => handleShare(selectedQRCode)}
               className='w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center space-x-2'
             >
-              <IoMdShare className='text-lg' />
-              <span>Share</span>
+              <MdOutlineContentCopy className='text-lg' />
+              <span>copy url</span>
             </button>
             <button
               onClick={handleDownload}

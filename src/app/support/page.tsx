@@ -22,7 +22,7 @@ const supportOptions = [
   {
     icon: <FiMail className="w-8 h-8" />,
     title: 'Email Support',
-    description: `${siteConfig.email} - Response within 24 hours.`,
+    description: `${siteConfig.email} `,
     color: 'bg-green-500',
   }
 ]
