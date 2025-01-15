@@ -29,7 +29,6 @@ const Dashboard: React.FC = () => {
   const [selectedQr, setSelectedQr] = useState<any>(null)
   const [selectedQRCode, setSelectedQRCode] = useState<any>(null)
   const [selectedScan, setSelectedScan] = useState<any | null>(null)
-
   const [largeQRCode, setLargeQRCode] = useState<any>(null)
   const [qrCodes, setQrCodes] = useState<any[]>([])
   const [totalPages, setTotalPages] = useState(1)
@@ -264,7 +263,7 @@ const Dashboard: React.FC = () => {
   return (
   <div className=" !h-full relative  !max-w-full flex flex-col">
       <Header />
-      <main className='p-4 lg:p-8'>
+      <main className='p-4 lg:p-8 bg-white'>
         <section className='bg-white shadow-md rounded-lg p-4 sm:p-6 lg:p-8'>
           <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4'>
             <div className='flex-1 min-w-0'>
@@ -330,13 +329,13 @@ const Dashboard: React.FC = () => {
           
           <div className='mt-3 sm:mt-4 flex flex-wrap gap-2 sm:gap-4'>
             <div className='flex items-center gap-1.5 text-xs sm:text-sm text-gray-600'>
-              <svg className='w-4 h-4 text-gray-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              {/* <svg className='w-4 h-4 text-gray-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
-              </svg>
-              <span>Last activity: Today</span>
+              </svg> */}
+              {/* <span>Last activity: Today</span> */}
             </div>
             <div className='flex items-center gap-1.5 text-xs sm:text-sm text-gray-600'>
-              <svg className='w-4 h-4 text-gray-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className='w-4 h-4 text-green-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
               </svg>
               <span>All systems operational</span>
@@ -344,7 +343,7 @@ const Dashboard: React.FC = () => {
           </div>
         </section>
 
-        <section className='flex flex-col items-center justify-center w-full py-2 my-4'>
+        <section className='flex flex-col  items-center justify-center w-full py-2 my-4'>
           <Suspense fallback={<LoadingSpinner />}>
             <UsageGraph data={dashboardData?.graphData} />
           </Suspense>
@@ -380,7 +379,7 @@ const Dashboard: React.FC = () => {
           {/* <RecentActivity /> */}
         </div>
 
-        <ScanModal qrCodeId={selectedScan?._id} totalScans={selectedScan?.scanCount} isOpen={!!selectedScan} closeModal={handleCloseScanModal} closeModalRef={closeModalRef} />
+        <ScanModal qrCodeId={selectedScan?._id} textContent={selectedScan?.textContent} totalScans={selectedScan?.scanCount} isOpen={!!selectedScan} closeModal={handleCloseScanModal} closeModalRef={closeModalRef} />
         <LargeQRCodeModal isVisible={!!largeQRCode} closeModal={closeLargeQR} qrRef={largeQRRef} modalRef={LarageQrRef} />
       </main>
 
@@ -390,7 +389,7 @@ const Dashboard: React.FC = () => {
         onConfirm={handleDelete}
         onCancel={() => setShowConfirm(false)}
         message={`Are you sure you want to delete the QR Code "${
-          selectedQr?.title || 'Untitled'
+          selectedQRCode ?.title || 'Untitled'
         }"?`} />
     </div>
   )

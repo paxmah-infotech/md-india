@@ -245,7 +245,7 @@ export default function UsageGraph({ data }: UsageGraphProps) {
   };
 
   return (
-    <Card className="w-full bg-white shadow-sm">
+    <Card className="w-full bg-gray-100 shadow-md">
       <CardHeader className="flex gap-2 sm:gap-3 px-3 sm:px-6 pt-4 sm:pt-6 pb-0">
         <div className="flex flex-col gap-1">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Usage Analytics</h3>

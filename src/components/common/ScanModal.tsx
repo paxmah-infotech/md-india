@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
-import { 
+import {
   IoLocationSharp,
   IoTimeOutline,
   IoGlobeOutline,
@@ -57,6 +57,7 @@ interface ScanModalProps {
   closeModal: () => void;
   closeModalRef?: React.RefObject<HTMLDivElement>;
   totalScans: number;
+  textContent?: string | any
 }
 
 const formatUserAgent = (userAgent: string): DeviceInfo => {
@@ -123,8 +124,8 @@ const getBrowserIcon = (browser: string) => {
 
 const getDeviceIcon = (type: string) => {
   const iconClass = "w-3.5 h-3.5";
-  return type.toLowerCase().includes('mobile') ? 
-    <HiDeviceMobile className={iconClass} /> : 
+  return type.toLowerCase().includes('mobile') ?
+    <HiDeviceMobile className={iconClass} /> :
     <HiDesktopComputer className={iconClass} />;
 };
 
@@ -138,7 +139,8 @@ const ScanModal: React.FC<ScanModalProps> = ({
   isOpen,
   closeModal,
   closeModalRef,
-  totalScans
+  totalScans,
+  textContent
 }) => {
   const [scanData, setScanData] = useState<ScanData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -240,9 +242,11 @@ const ScanModal: React.FC<ScanModalProps> = ({
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {totalScans} total {totalScans === 1 ? 'scan' : 'scans'}
             </p>
+            {/* description goes here */}
+            {textContent && <p className="text-sm text-gray-500 dark:text-gray-400">Description: <span className='text-gray-900'>{textContent}</span></p>}
           </div>
         </div>
-        
+
         <div className="h-[calc(85vh-4rem)] sm:h-auto sm:max-h-[calc(85vh-4rem)] overflow-y-auto overscroll-bounce">
           {initialLoading ? (
             <div className="flex flex-col justify-center items-center h-48 space-y-3">
@@ -271,11 +275,12 @@ const ScanModal: React.FC<ScanModalProps> = ({
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <button
-                            onClick={() => openInMaps(scan.location.coordinates)}
+                            onClick={() => openInMaps(scan?.location?.coordinates)}
+                            title='Open in Maps'
                             className="cursor-pointer group inline-flex items-center space-x-1.5 text-xs font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 active:text-blue-700 dark:active:text-blue-500"
                           >
                             <IoLocationSharp className="w-3.5 h-3.5 text-red-500 dark:text-red-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
-                            <span className="truncate">{formatLocation(scan.location)}</span>
+                            <span className="truncate">{formatLocation(scan?.location)}</span>
                             <IoOpenOutline className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </button>
                           <span className="text-xs text-gray-500 dark:text-gray-400">•</span>
@@ -306,7 +311,7 @@ const ScanModal: React.FC<ScanModalProps> = ({
               })}
             </div>
           )}
-          
+
           {!initialLoading && (
             <div
               ref={loadingRef}

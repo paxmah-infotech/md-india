@@ -87,7 +87,7 @@ const Confirm: React.FC<ConfirmProps> = ({
 
               <div className="flex gap-2 sm:gap-3 justify-end">
                 <button
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-sm sm:text-base"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-gray-700 border dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700  duration-200 text-sm sm:text-base"
                   onClick={onCancel}
                 >
                   Cancel

@@ -32,7 +32,7 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen relative">
       {/* Background Image */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-white"
       />
 
@@ -51,16 +51,16 @@ const Home: React.FC = () => {
               </p>
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center">
                 <div className="rounded-md shadow">
-                  <Link 
-                    href="/new" 
+                  <Link
+                    href="/new"
                     className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
                   >
                     Create QR Code
                   </Link>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">
-                  <Link 
-                    href="/learn-more" 
+                  <Link
+                    href="/learn-more"
                     className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10"
                   >
                     Learn More
@@ -90,17 +90,20 @@ const Home: React.FC = () => {
                     key={index}
                     className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow border border-white border-opacity-20"
                   >
-                    <div className={`${item.color} w-12 h-12 rounded-md flex items-center justify-center text-white mb-4`}>
-                      {item.icon}
-                    </div>
-                    <h3 className="text-lg font-medium text-white">{item.title}</h3>
+                    <section className='flex w-full '>
+
+                      <div className={`${item.color} w-12 h-12 rounded-md flex items-center justify-center text-white mb-4`}>
+                        {item.icon}
+                      </div>
+                      <h3 className="text-2xl font-medium text-gray-800 ml-4 mt-2">{item.title}</h3>
+                    </section>
                     <p className="mt-2 text-base text-gray-800">{item.description}</p>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-        </div>        
+        </div>
       </div>
     </div>
   );

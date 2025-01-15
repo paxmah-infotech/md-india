@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       .sort({ createdAt: -1 }) // Sort by `createdAt` in descending order
       .skip(skip)
       .limit(limit)
-      .select('title showTitle targetUrl scanCount qrOptions shortId createdAt updatedAt')
+      .select('title showTitle textContent showText targetUrl scanCount qrOptions shortId createdAt updatedAt')
       .lean();
 
     // Populate scan logs for each QR code
@@ -59,11 +59,12 @@ export async function GET(request: NextRequest) {
         // const scans = await ScanLog.find({ qrCode: qrCode._id })
         //   .select('ip userAgent referer timestamp')
         //   .lean();
-
         return {
           _id: qrCode._id,
           title: qrCode.title,
           showTitle: qrCode.showTitle,
+          textContent: qrCode.textContent,
+          showText: qrCode?.showText || true,
           targetUrl: qrCode.targetUrl,
           scanCount: qrCode.scanCount,
           qrOptions: {

@@ -48,6 +48,11 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
       }
     }
 
+    // Prevent multiple QR code instances
+    if (container.children.length > 0) {
+      return;
+    }
+
     // Create QR code options with proper types
     const qrOptions = {
       width: 120,
@@ -91,7 +96,7 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
         qrRef.current = undefined;
       }
     };
-  }, [qrCode, qrPreview]);
+  }, [qrCode?.qrOptions?.data]); // Only re-render when QR data changes
 
   const handleDownload = async () => {
     if (!qrRef.current || !qrCode?.qrOptions?.data) return;
@@ -149,13 +154,10 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
         onClick={() => handleViewLargeQR(qrCode, index)}
       >
         <div 
-          ref={el => {
-            if (el) {
-              containerRef.current = el;
-              if (qrPreview) qrPreview(el);
-            }
-          }}
-          className="flex items-center justify-center w-full h-full" 
+        title='Click to view large QR code'
+          ref={containerRef}
+          className="flex items-center justify-center w-full h-full"
+          style={{ minHeight: '120px' }}
         />
       </div>
 
@@ -166,6 +168,10 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
         </h3>
         <p className='mt-1 text-sm text-gray-500 truncate'>
           {qrCode.targetUrl}
+        </p>
+        {/* description with ... ending  */}
+        <p className='mt-1 text-xs text-gray-500 truncate'>
+          {qrCode?.textContent}
         </p>
         <div className='mt-2 flex items-center space-x-2'>
           <button

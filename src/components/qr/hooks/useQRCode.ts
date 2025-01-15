@@ -166,7 +166,9 @@ export const useQRCode = () => {
       formData.append('title', state.title)
       formData.append('showTitle', state.showTitle.toString())
       formData.append('qrOptions', JSON.stringify(qrOptions))
-
+      formData.append('textContent', state.textContent)
+      formData.append('showText', state.showText.toString())
+      
       const response = await createQr(formData)
       if (!response || !response.qrCode?.shortId) {
         throw new Error('Failed to save QR metadata to backend')

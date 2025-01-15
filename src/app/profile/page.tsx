@@ -207,7 +207,7 @@ const Profile: React.FC = () => {
                   htmlFor='email'
                   className='block text-sm font-medium text-gray-700'
                 >
-                  Email <span className='text-xs text-gray-500'>(Read Only)</span>
+                  Email <span className='text-xs text-red-500'>The email address cannot be changed at this time.</span>
                 </label>
                 <input
                   id='email'
@@ -215,7 +215,7 @@ const Profile: React.FC = () => {
                   value={userEmail}
                   onChange={handleEmailChange}
                   disabled
-                  className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500'
+                  className='mt-1 block w-full p-2  border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500'
                 />
               </div>
 
@@ -254,15 +254,8 @@ const Profile: React.FC = () => {
             You can export your data in different formats for your records.
           </p>
           <div className='space-y-4'>
-            {/* JSON Export */}
-            <Link
-              href='/export'
-              target='_blank'
-              className='flex items-center text-blue-600 hover:underline'
-            >
-              <LuFileJson2 className='w-5 h-5 mr-2' />
-              <span>Export as JSON</span>
-            </Link>
+            {/* 
+          
 
             {/* Excel Export */}
             <Link

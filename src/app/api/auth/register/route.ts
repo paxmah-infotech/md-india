@@ -76,6 +76,18 @@ export async function POST(request: NextRequest) {
     // Check existing user
     const existingUser = await User.findOne({ email: value.email });
     if (existingUser) {
+      if(!existingUser.isVerified){
+        return NextResponse.json(
+          { success: false, message: "Your account is not verified yet. Please verify your account via email." },
+          { 
+            status: 400,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json',
+            }
+          }
+        );
+      }
       return NextResponse.json(
         { success: false, message: "User already exists" },
         { 

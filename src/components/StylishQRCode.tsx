@@ -310,6 +310,7 @@ export default function StylishQRCode () {
   }, [qrCodeStyles, bgColor])
 
   const handleDownloadQRCode = async () => {
+    console.log('trying to downlaod ...')
     const activeQrRef = qrRef.current
     if (
       !activeQrRef ||
@@ -317,7 +318,7 @@ export default function StylishQRCode () {
       selectedStyleIndex === undefined
     )
       return
-
+console.log("condition passed ")
     try {
       setLoading(true)
 
@@ -349,8 +350,9 @@ export default function StylishQRCode () {
       formData.append('targetUrl', url)
       formData.append('title', title)
       formData.append('showTitle', showTitle.toString())
-      formData.append('qrOptions', JSON.stringify(qrOptions))
-
+      formData.append('textContent', textContent)
+      formData.append('showText', showText.toString())
+    formData.append('qrOptions', JSON.stringify(qrOptions))
       const response = await createQr(formData)
       if (!response || !response.qrCode?.shortId) {
         throw new Error('Failed to save QR metadata to backend')

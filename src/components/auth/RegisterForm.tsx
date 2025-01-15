@@ -11,34 +11,44 @@ export default function RegisterForm() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handlePasswordToggle = () => setShowPassword(!showPassword);
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setSuccess('Registration successful! You can now sign in.');
-      setEmail('');
-      setPassword('');
-      setTimeout(() => {
-        setSuccess('');
-        router.push('/auth/signin');
-      }, 3000);
-    } else {
-      setError(data.message);
-    }
+    try {
+    
+      e.preventDefault();
+      setLoading(true);
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        console.log("data on register : ", data)
+        setLoading(false);
+        setSuccess('Registration successful! Please verify your account via email.');
+        setEmail('');
+        setPassword('');
+        setTimeout(() => {
+          setSuccess('');
+          router.push('/auth/signin');
+        }, 3000);
+      } else {
+        setError(data.message);
+      }
+  } catch (error) {
+    
+  } finally {
+    setLoading(false);
+  }
   };
 
   return (
@@ -47,7 +57,6 @@ export default function RegisterForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <div className="p-2 text-red-700 bg-red-100 border border-red-300 rounded">{error}</div>}
         {success && <div className="p-2 text-green-700 bg-green-100 border border-green-300 rounded">{success}</div>}
-
         <div>
           <Input
             id="email"
@@ -88,7 +97,7 @@ export default function RegisterForm() {
         </div>
 
         <button type="submit" className="w-full py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none">
-          Register
+          Register {loading ? '...' : ''}
         </button>
       </form>
 

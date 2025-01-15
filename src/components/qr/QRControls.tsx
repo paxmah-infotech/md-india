@@ -11,7 +11,7 @@ import {
 interface QRControlsProps {
   url: string
   title: string
-  textContent: string
+  textContent: any
   showUrl: boolean
   showTitle: boolean
   showText: boolean
@@ -109,7 +109,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
             </label> */}
           </div>
 
-          {/* <div>
+          <div>
             <label className='block text-sm font-medium text-gray-700 mb-2'>
               Additional Text
             </label>
@@ -119,7 +119,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
               className='w-full border border-gray-200 rounded-lg p-3 text-sm min-h-[80px]'
               placeholder='Add description or notes'
             />
-            <label className='flex items-center gap-2 text-sm text-gray-600 mt-2'>
+            {/* <label className='flex items-center gap-2 text-sm text-gray-600 mt-2'>
               <input
                 type='checkbox'
                 checked={showText}
@@ -127,8 +127,8 @@ export const QRControls: React.FC<QRControlsProps> = ({
                 className='w-4 h-4 rounded border-gray-300 text-blue-500'
               />
               Show text in QR code
-            </label>
-          </div> */}
+            </label> */}
+          </div>
         </div>
       </div>
 
@@ -191,7 +191,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
               </select>
             </div>
             <div>
-              <label className='block text-sm text-gray-600 mb-2'>Size</label>
+              <label className='block text-sm text-gray-600 mb-2'>Size (auto selected best quality)</label>
               <select
                 value={width}
                 onChange={onWidthChange}
@@ -208,7 +208,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
 
           <div>
             <label className='block text-sm text-gray-600 mb-2'>
-              Margin: {margin}px
+              Margin: {margin}px (auto selected according page size)
             </label>
             <input
               type='range'
