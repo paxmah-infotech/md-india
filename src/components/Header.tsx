@@ -53,7 +53,7 @@ const Header: React.FC = () => {
   )
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-white/75 backdrop-blur-lg">
+    <header className={`${pathname === '/new' ? 'relative' : 'sticky'} top-0 z-40 w-full border-b bg-white/75 backdrop-blur-lg`}>
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex h-auto sm:h-18 lg:h-20 items-center justify-between">
           {/* Logo */}

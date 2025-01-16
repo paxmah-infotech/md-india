@@ -191,7 +191,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
               </select>
             </div>
             <div>
-              <label className='block text-sm text-gray-600 mb-2'>Size (auto selected best quality)</label>
+              <label className='block text-sm text-gray-600 mb-2'>Size (best quality)</label>
               <select
                 value={width}
                 onChange={onWidthChange}
