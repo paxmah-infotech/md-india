@@ -66,7 +66,7 @@ export default function StylishQRCode() {
       {/* Mobile Layout */}
       <div className='relative pb-2 lg:hidden'>
         {/* Fixed QR Preview at Top */}
-        <div className='sticky top-10 w-full left-0 right-0 bg-white/20 backdrop-blur-md shadow-lg  p-1'>
+        <div className=' top-10 w-full left-0 right-0 bg-white/20 backdrop-blur-md   p-1'>
           <div className='flex flex-col items-center'>
             <QRPreview
               qrRef={qrRef}
@@ -142,9 +142,9 @@ export default function StylishQRCode() {
 
           {/* Right side - Preview and Style Gallery */}
           <div className='w-full lg:w-1/2 z-30'>
-            <div className='lg:sticky lg:top-24 space-y-6'>
+            <div className=' space-y-6'>
               {/* QR Preview */}
-              <div className='bg-white p-6 rounded-xl shadow-sm border border-gray-100'>
+              <div className='bg-white p-6 rounded-xl  border border-gray-100'>
                 <h3 className='text-sm font-semibold text-gray-700 mb-4'>QR Code Preview</h3>
                 <div ref={desktopQrRef} className='flex justify-center' />
                 <button

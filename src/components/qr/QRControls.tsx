@@ -94,7 +94,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
               type='text'
               value={title}
               onChange={onTitleChange}
-              maxLength={60}
+              maxLength={150}
               className='w-full border border-gray-200 rounded-lg p-3 text-sm'
               placeholder='Enter QR title'
             />
@@ -111,10 +111,11 @@ export const QRControls: React.FC<QRControlsProps> = ({
 
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-2'>
-              Additional Text
+            Description
             </label>
             <textarea
               value={textContent}
+              maxLength={700}
               onChange={onTextChange}
               className='w-full border border-gray-200 rounded-lg p-3 text-sm min-h-[80px]'
               placeholder='Add description or notes'

@@ -45,8 +45,8 @@ export const StyleGallery: React.FC<StyleGalleryProps> = ({
         if (!container) return
 
         const qr = new QRCodeStyling({
-          width: 85,
-          height: 85,
+          width:  105,
+          height: 105,
           type: 'svg',
           data: `${window.location.origin}/api/v1/qr?shortId=find&targetUrl=${encodeURIComponent('https://example.com')}`,
           // image: siteConfig.qrlogo,
@@ -102,7 +102,7 @@ export const StyleGallery: React.FC<StyleGalleryProps> = ({
           >
             <div
               ref={setContainerRef(index)}
-              className='w-full h-full bg-white flex items-center justify-center p-2'
+              className='w-full h-full bg-white flex items-center justify-center p-1'
             />
             {selectedStyleIndex === index && (
               <div className='absolute inset-0 bg-blue-500/10 flex items-center justify-center'>

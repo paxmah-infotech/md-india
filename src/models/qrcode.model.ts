@@ -18,9 +18,9 @@ export interface IQRCode extends Document {
 const QRCodeSchema = new Schema<IQRCode>({
   qrType: { type: String, enum: ['url', 'text'], default: 'url' },
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  title: { type: String, required: true, maxlength: 100 },
+  title: { type: String, required: true, maxlength: 200 },
   showTitle: { type: Boolean, default: true },
-  textContent: { type: String, maxlength: 500, default: '' },
+  textContent: { type: String, maxlength: 1000, default: '' },
   showText: { type: Boolean, default: true },
   targetUrl: { type: String, required: true, validate: /^(http|https):\/\// },
   shortId: { type: String, required: true },
