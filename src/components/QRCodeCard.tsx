@@ -182,7 +182,7 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
             View Scans
           </button>
         </div>
-        {qrCode?.scanCount > 0 && <span className='text-xs text-gray-500'>scan counts : {qrCode?.scanCount}</span>}
+        <span className='text-xs text-gray-500'>scan counts : {qrCode?.scanCount || 0}</span>
       </div>
 
       {/* MoreVert Icon with Dropdown */}
