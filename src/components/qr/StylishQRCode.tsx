@@ -22,6 +22,13 @@ export default function StylishQRCode() {
     setState(prev => ({ ...prev, ...update }))
   }
 
+  const handleLogoSelect = (logo: string | null) => {
+    updateState({
+      selectedLogo: logo,
+      logoUrl: logo ? `/qr_logo/${logo}` : null
+    })
+  }
+
   const handleStyleSelection = (index: number) => {
     const selectedStyle = qrCodeStyles[index]
     if (selectedStyle) {
@@ -46,7 +53,7 @@ export default function StylishQRCode() {
           ...style,
           width: 85,
           height: 85,
-          image: siteConfig.qrlogo,
+          image: state.logoUrl || siteConfig.qrlogo,
           data: `${origin}/api/v1/qr?shortId=find&targetUrl=${state.url}`,
           backgroundOptions: {
             color: state.bgColor
@@ -59,7 +66,7 @@ export default function StylishQRCode() {
         qrCodeInstance.append(container)
       }
     })
-  }, [qrCodeStyles, state.bgColor])
+  }, [qrCodeStyles, state.bgColor, state.logoUrl])
 
   return (
     <div className='min-h-screen bg-gray-50 '>
@@ -82,11 +89,13 @@ export default function StylishQRCode() {
         <div className=' space-y-4'>
           <QRControls
             {...state}
+            selectedLogo={state.selectedLogo}
             onUrlChange={e => updateState({ url: e.target.value })}
             onTitleChange={e => updateState({ title: e.target.value })}
             onTextChange={e => updateState({ textContent: e.target.value })}
             onShowTitleChange={() => updateState({ showTitle: !state.showTitle })}
             onShowTextChange={() => updateState({ showText: !state.showText })}
+            onLogoSelect={handleLogoSelect}
             onCornerTypeChange={e => updateState({ cornerType: e.target.value as CornerSquareType })}
             onDotTypeChange={e => updateState({ dotType: e.target.value as DotType })}
             onCornerDotTypeChange={e => updateState({ cornerDotType: e.target.value as CornerDotType })}
@@ -118,6 +127,7 @@ export default function StylishQRCode() {
               showUrl={true}
               showTitle={state.showTitle}
               showText={state.showText}
+              selectedLogo={state.selectedLogo}
               cornerType={state.cornerType}
               dotType={state.dotType}
               cornerDotType={state.cornerDotType}
@@ -130,6 +140,7 @@ export default function StylishQRCode() {
               onTextChange={(e) => updateState({ textContent: e.target.value })}
               onShowTitleChange={() => updateState({ showTitle: !state.showTitle })}
               onShowTextChange={() => updateState({ showText: !state.showText })}
+              onLogoSelect={handleLogoSelect}
               onCornerTypeChange={(e) => updateState({ cornerType: e.target.value as CornerSquareType })}
               onDotTypeChange={(e) => updateState({ dotType: e.target.value as DotType })}
               onCornerDotTypeChange={(e) => updateState({ cornerDotType: e.target.value as CornerDotType })}

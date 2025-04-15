@@ -14,7 +14,8 @@ export const useQRCode = () => {
     bgColor: '#ffffff',
     qrColor: '',
     title: 'Scan Me',
-    // image: siteConfig.qrlogo,
+    selectedLogo: null,
+    logoUrl: null,
     showTitle: true,
     showText: true,
     textContent: '',
@@ -57,7 +58,7 @@ export const useQRCode = () => {
       width: state.width,
       height: state.width,
       data: qrUrl,
-      // image: siteConfig.qrlogo,
+      ...(state.logoUrl ? { image: state.logoUrl } : {}),
       dotsOptions: {
         color: state.qrColor || defaultColor,
         type: state.dotType
@@ -75,7 +76,7 @@ export const useQRCode = () => {
       },
       imageOptions: {
         hideBackgroundDots: true,
-        imageSize: 0.4,
+        imageSize: 0.25,
         margin: 10
       },
       margin: state.margin || 20,
@@ -84,24 +85,35 @@ export const useQRCode = () => {
       }
     }
 
-    // Clear previous QR code
-    if (qrRef.current) {
+    const createQRCode = async () => {
+      if (!qrRef.current) return
+
       qrRef.current.innerHTML = ''
+      const qr = new QRCodeStyling(qrOptions)
+
+      if (state.logoUrl) {
+        await new Promise((resolve, reject) => {
+          const img = new Image()
+          img.onload = resolve
+          img.onerror = reject
+          img.src = state.logoUrl!
+        }).catch(() => console.error('Failed to load logo'))
+      }
+
+      qr.append(qrRef.current)
+
+      if (desktopQrRef.current) {
+        desktopQrRef.current.innerHTML = ''
+        const desktopQr = new QRCodeStyling({
+          ...qrOptions,
+          width: 300,
+          height: 300
+        })
+        desktopQr.append(desktopQrRef.current)
+      }
     }
 
-    const qr = new QRCodeStyling(qrOptions)
-    qr.append(qrRef.current)
-
-    // Also update desktop preview if it exists
-    if (desktopQrRef.current) {
-      desktopQrRef.current.innerHTML = ''
-      const desktopQr = new QRCodeStyling({
-        ...qrOptions,
-        width: 300,
-        height: 300
-      })
-      desktopQr.append(desktopQrRef.current)
-    }
+    createQRCode()
 
     return () => {
       if (qrRef.current) {
@@ -120,6 +132,7 @@ export const useQRCode = () => {
     state.cornerType,
     state.cornerDotType,
     state.selectedStyleIndex,
+    state.logoUrl,
     qrShortId,
   ])
 
@@ -134,7 +147,7 @@ export const useQRCode = () => {
         width: state.width,
         height: state.width,
         data: state.url || '',
-        // image: siteConfig.qrlogo,
+        ...(state.logoUrl ? { image: state.logoUrl } : {}),
         dotsOptions: {
           color: state.qrColor || qrCodeStyles[state.selectedStyleIndex]?.color || '#000000',
           type: state.dotType
@@ -150,14 +163,14 @@ export const useQRCode = () => {
         backgroundOptions: {
           color: state.bgColor || '#ffffff'
         },
+        imageOptions: {
+          hideBackgroundDots: true,
+          imageSize: 0.25,
+          margin: 10
+        },
         margin: state.margin || 20,
         qrOptions: {
           errorCorrectionLevel: 'H'
-        },
-        imageOptions: {
-          hideBackgroundDots: true,
-          imageSize: 0.4,
-          margin: 10
         }
       }
 
@@ -174,43 +187,37 @@ export const useQRCode = () => {
         throw new Error('Failed to save QR metadata to backend')
       }
 
-      // Set the shortId and wait for state update
       setQrShortId(response.qrCode.shortId)
       
-      // Add a small delay to ensure QR code is updated with new shortId
       await new Promise(resolve => setTimeout(resolve, 500))
 
       const origin = typeof window !== 'undefined' ? window.location.origin : ''
       const finalQrUrl = `${origin}/api/v1/qr?shortId=${response.qrCode.shortId}&targetUrl=${state.url}`
 
-      // Create new QR code with final URL for download
       const downloadQrOptions: QRCodeOptions = {
         ...qrOptions,
         data: finalQrUrl,
         imageOptions: {
           hideBackgroundDots: true,
-          imageSize: 0.4,
+          imageSize: 0.25,
           margin: 10
         }
       }
 
-      // Create an Image element to preload the logo
-      const img = new Image()
-      img.crossOrigin = 'anonymous'
-      img.src = siteConfig.qrlogo
-
-      // Wait for image to load before creating QR
-      await new Promise((resolve, reject) => {
-        img.onload = resolve
-        img.onerror = reject
-        setTimeout(resolve, 1000) // Fallback timeout
-      })
+      if (state.logoUrl) {
+        await new Promise((resolve, reject) => {
+          const img = new Image()
+          img.crossOrigin = 'anonymous'
+          img.onload = resolve
+          img.onerror = reject
+          img.src = state.logoUrl!
+        }).catch(() => console.error('Failed to load logo'))
+      }
 
       const downloadQr = new QRCodeStyling(downloadQrOptions)
       const tempDiv = document.createElement('div')
       downloadQr.append(tempDiv)
 
-      // Wait for QR code to render and image to load
       await new Promise(resolve => setTimeout(resolve, 300))
 
       const canvas = tempDiv.querySelector('canvas')

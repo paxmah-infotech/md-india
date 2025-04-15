@@ -52,6 +52,8 @@ export interface QRCodeState {
   bgColor: string
   qrColor: string
   image?: string
+  selectedLogo: string | null
+  logoUrl: string | null
   title: string
   showTitle: boolean
   showText: boolean

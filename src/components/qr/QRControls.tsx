@@ -1,6 +1,7 @@
 import React from 'react'
 import { DotType, CornerSquareType, CornerDotType } from 'qr-code-styling'
 import UrlInput from '../common/Input'
+import { LogoSelector } from './LogoSelector'
 import {
   cornerTypeOptions,
   dotTypeOptions,
@@ -16,6 +17,7 @@ interface QRControlsProps {
   showTitle: boolean
   showText: boolean
   image?: string
+  selectedLogo: string | null
   cornerType: CornerSquareType
   dotType: DotType
   cornerDotType: CornerDotType
@@ -28,6 +30,7 @@ interface QRControlsProps {
   onTextChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
   onShowTitleChange: () => void
   onShowTextChange: () => void
+  onLogoSelect: (logo: string | null) => void
   onCornerTypeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   onDotTypeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   onCornerDotTypeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
@@ -45,6 +48,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
   showTitle,
   showText,
   cornerType,
+  selectedLogo,
   image,
   dotType,
   cornerDotType,
@@ -57,6 +61,7 @@ export const QRControls: React.FC<QRControlsProps> = ({
   onTextChange,
   onShowTitleChange,
   onShowTextChange,
+  onLogoSelect,
   onCornerTypeChange,
   onDotTypeChange,
   onCornerDotTypeChange,
@@ -132,6 +137,9 @@ export const QRControls: React.FC<QRControlsProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Logo Selection */}
+      <LogoSelector selectedLogo={selectedLogo} onLogoSelect={onLogoSelect} />
 
       {/* Advanced Options */}
       <div className='bg-white p-4 rounded-xl shadow-sm border border-gray-100'>
