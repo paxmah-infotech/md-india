@@ -58,6 +58,7 @@ const QRCodeCard: FC<QRCodeCardProps> = ({
       width: 120,
       height: 120,
       data: qrCode.qrOptions.data,
+      ...(qrCode.qrOptions.image ? { image: qrCode.qrOptions.image } : {}),
       dotsOptions: {
         color: qrCode.qrOptions.dotsOptions?.color || '#000000',
         type: qrCode.qrOptions.dotsOptions?.type as DotType || 'square'

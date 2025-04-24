@@ -1,14 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import QRCodeStyling, { DotType, CornerSquareType } from 'qr-code-styling'
-import { MdOutlineFileUpload } from 'react-icons/md'
 import { FaDownload } from 'react-icons/fa'
 import { RiLoader4Fill } from 'react-icons/ri'
-import Image from 'next/image'
 import { createQr } from '@/utils/apiHandlers'
 import { useRouter } from 'next/navigation'
 import UrlInput from './common/Input'
-import html2canvas from 'html2canvas'
-import { siteConfig } from '@/config/site.config'
 
 // QR code styles
 const qrCodeStyles = [

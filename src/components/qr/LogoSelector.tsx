@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 
 interface LogoSelectorProps {
@@ -40,8 +41,10 @@ export const LogoSelector: React.FC<LogoSelectorProps> = ({ selectedLogo, onLogo
             }`}
             onClick={() => onLogoSelect(logo)}
           >
-            <img
+            <Image
               src={`/qr_logo/${logo}`}
+              width={100}
+              height={100}
               alt={`Logo ${index + 1}`}
               className="w-full h-full object-contain"
             />

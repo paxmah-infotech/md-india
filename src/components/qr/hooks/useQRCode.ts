@@ -58,7 +58,15 @@ export const useQRCode = () => {
       width: state.width,
       height: state.width,
       data: qrUrl,
-      ...(state.logoUrl ? { image: state.logoUrl } : {}),
+      ...(state.logoUrl ? {
+        image: state.logoUrl,
+        imageOptions: {
+          crossOrigin: 'anonymous',
+          margin: 4, // Increased space for a more beautiful look
+          imageSize: 0.42, // Slightly reduced to make more room for the margin
+          hideBackgroundDots: true
+        }
+      } : {}),
       dotsOptions: {
         color: state.qrColor || defaultColor,
         type: state.dotType
@@ -76,8 +84,8 @@ export const useQRCode = () => {
       },
       imageOptions: {
         hideBackgroundDots: true,
-        imageSize: 0.25,
-        margin: 10
+        imageSize: 0.42, // Slightly reduced to make more room for the margin
+        margin: 4 // Increased space for a more beautiful look
       },
       margin: state.margin || 20,
       qrOptions: {
@@ -147,7 +155,15 @@ export const useQRCode = () => {
         width: state.width,
         height: state.width,
         data: state.url || '',
-        ...(state.logoUrl ? { image: state.logoUrl } : {}),
+        ...(state.logoUrl ? { 
+          image: state.logoUrl,
+          imageOptions: {
+            crossOrigin: 'anonymous',
+            margin: 4, // Increased space for a more beautiful look
+            imageSize: 0.42, // Slightly reduced to make more room for the margin
+            hideBackgroundDots: true
+          }
+        } : {}),
         dotsOptions: {
           color: state.qrColor || qrCodeStyles[state.selectedStyleIndex]?.color || '#000000',
           type: state.dotType
@@ -165,8 +181,8 @@ export const useQRCode = () => {
         },
         imageOptions: {
           hideBackgroundDots: true,
-          imageSize: 0.25,
-          margin: 10
+          imageSize: 0.42, // Slightly reduced to make more room for the margin
+          margin: 4 // Increased space for a more beautiful look
         },
         margin: state.margin || 20,
         qrOptions: {
@@ -199,8 +215,8 @@ export const useQRCode = () => {
         data: finalQrUrl,
         imageOptions: {
           hideBackgroundDots: true,
-          imageSize: 0.25,
-          margin: 10
+          imageSize: 0.42, // Slightly reduced to make more room for the margin
+          margin: 4 // Increased space for a more beautiful look
         }
       }
 

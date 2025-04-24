@@ -138,8 +138,6 @@ export const QRControls: React.FC<QRControlsProps> = ({
         </div>
       </div>
 
-      {/* Logo Selection */}
-      <LogoSelector selectedLogo={selectedLogo} onLogoSelect={onLogoSelect} />
 
       {/* Advanced Options */}
       <div className='bg-white p-4 rounded-xl shadow-sm border border-gray-100'>
@@ -257,6 +255,10 @@ export const QRControls: React.FC<QRControlsProps> = ({
           </div>
         </div>
       </div>
+
+      
+      {/* Logo Selection */}
+      <LogoSelector selectedLogo={selectedLogo} onLogoSelect={onLogoSelect} />
     </div>
   )
 }
