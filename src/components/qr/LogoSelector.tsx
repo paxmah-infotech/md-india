@@ -17,7 +17,8 @@ const LOGO_LIST = [
   'Welding & Cutting India.jpg',
   'glasspex INDIA.jpg',
   'glasspro INDIA.jpg',
-  'wire India.jpg'
+  'wire India.jpg',
+  'glasspex_glasspro.jpg'
 ];
 
 export const LogoSelector: React.FC<LogoSelectorProps> = ({ selectedLogo, onLogoSelect }) => {
